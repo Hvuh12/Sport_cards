@@ -8,10 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#e8ebef;--pocket:#f7f8fa;--edge:#c9ced6;--text:#141a24;--muted:#5d6675;--tag:#ffd23f;--tag-t:#1a1500;--field:#fff;
+:root{color-scheme:light;--bg:#fff;--pocket:#f5f6f8;--edge:#dcdfe5;--text:#141a24;--muted:#5d6675;--tag:#ffd23f;--tag-t:#1a1500;--field:#fff;
 --disp:"Barlow Condensed","Arial Narrow",Impact,sans-serif;--body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1622;--pocket:#18222f;--edge:#2c3a4c;--text:#eef1f6;--muted:#97a3b5;--field:#18222f}}
-:root[data-theme="dark"]{--bg:#0f1622;--pocket:#18222f;--edge:#2c3a4c;--text:#eef1f6;--muted:#97a3b5;--field:#18222f}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--body)}
 main{max-width:1120px;margin:0 auto;padding:32px 16px 56px}
@@ -73,29 +71,30 @@ const plabel=c=>isNaN(pn(c))?(String(c.price??'').trim().toUpperCase()||'—'):f
 const cmp=d=>(a,b)=>{const x=pn(a),y=pn(b);return isNaN(x)?(isNaN(y)?0:1):isNaN(y)?-1:d*(x-y)};
 const ALWAYS=['Football','F1'];
 const ALIAS={'bóng đá':'Football','bong da':'Football','soccer':'Football'};
+const st=c=>{const t=String(c.price??'').trim().toLowerCase();return /^sold/.test(t)?'sold':/^(nfs|nft|not for sale)/.test(t)?'nfs':''};
 const sp=c=>{const x=(c.sport||'').trim();return ALIAS[x.toLowerCase()]||x};
 let tab='all',labels={};
 function drawTabs(){
   const m=new Map();ALWAYS.forEach(x=>m.set(x.toLowerCase(),x));
   cards.forEach(c=>{const x=sp(c);if(x&&!m.has(x.toLowerCase()))m.set(x.toLowerCase(),x)});
   labels={};const box=$('#tabs');box.textContent='';
-  const mk=(key,label)=>{if(key!=='all')labels[key]=label;const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(tab===key));b.textContent=label;b.onclick=()=>{tab=key;render()};box.append(b)};
-  mk('all','ALL');m.forEach((label,key)=>mk(key,label));
+  const mk=(key,label,tip)=>{if(key!=='all')labels[key]=label;const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(tab===key));b.textContent=label;if(tip)b.title=tip;b.onclick=()=>{tab=key;render()};box.append(b)};
+  mk('all','ALL');m.forEach((label,key)=>mk(key,label));mk('nfs','NFS','Not For Sale');mk('sold','SOLD','Đã bán');
 }
 function render(){
   drawTabs();
   const q=$('#q').value.trim().toLowerCase(),s=$('#sort').value;
-  const base=cards.map((c,i)=>({...c,i})).filter(c=>tab==='all'||sp(c).toLowerCase()===tab);
+  const base=cards.map((c,i)=>({...c,i})).filter(c=>tab==='all'||(tab==='nfs'||tab==='sold'?st(c)===tab:sp(c).toLowerCase()===tab));
   const list=base.filter(c=>(c.name||'').toLowerCase().includes(q));
   const by={orig:(a,b)=>a.i-b.i,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]);
   const lab=tab==='all'?'':' '+labels[tab];
   $('#stat').textContent=base.length?base.length+' thẻ'+lab+'.':'Chưa có thẻ'+lab+' nào.';
   const g=$('#grid');g.textContent='';
-  if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
+  if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':tab==='nfs'||tab==='sold'?'Chưa có thẻ nào ở mục này.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
   for(const c of list){
     const src=encodeURI(c.img||'');
-    const d=document.createElement('div');d.className='pocket'+(/^sold/i.test(String(c.price).trim())?' sold':'');
+    const d=document.createElement('div');d.className='pocket'+(st(c)==='sold'?' sold':'');
     const b=document.createElement('button');b.className='pic';b.type='button';b.setAttribute('aria-label','Xem lớn: '+(c.name||'thẻ'));
     const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt=c.name||'Thẻ bóng đá';
     const p=document.createElement('span');p.className='price'+(isNaN(pn(c))?' tx':'');p.textContent=plabel(c);
