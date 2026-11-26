@@ -32,6 +32,8 @@ input,select{font:inherit;color:var(--text);background:var(--field);border:1px s
 .pic{position:relative;display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;border-radius:4px}
 .pic img{display:block;width:100%;aspect-ratio:5/7;object-fit:cover;border-radius:4px;background:var(--edge)}
 .price{position:absolute;right:-6px;bottom:10px;background:var(--tag);color:var(--tag-t);font:700 19px/1 var(--disp);padding:5px 9px 4px;border-radius:3px;transform:rotate(-2deg);box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.price.tx{background:var(--text);color:var(--bg);letter-spacing:.04em}
+.pocket.sold .pic img{opacity:.45;filter:grayscale(1)}
 .name{font-weight:500;font-size:15px;line-height:1.3;padding:0 2px 2px;overflow-wrap:anywhere}
 .empty{grid-column:1/-1;color:var(--muted);padding:40px 0}
 dialog{border:0;background:transparent;padding:8px;max-width:96vw}
@@ -66,6 +68,9 @@ const $=s=>document.querySelector(s);
 let cards=[];
 const fmt=(n,c)=>{c=c||'VND';try{return new Intl.NumberFormat(c==='USD'?'en-US':'vi-VN',{style:'currency',currency:c,maximumFractionDigits:c==='USD'?2:0}).format(n)}catch(e){return n+' '+c}};
 
+const pn=c=>{const v=c.price;return typeof v==='number'?v:(/^\d+(\.\d+)?$/.test(String(v).trim())?+v:NaN)};
+const plabel=c=>isNaN(pn(c))?(String(c.price??'').trim().toUpperCase()||'—'):fmt(pn(c),c.cur);
+const cmp=d=>(a,b)=>{const x=pn(a),y=pn(b);return isNaN(x)?(isNaN(y)?0:1):isNaN(y)?-1:d*(x-y)};
 const ALWAYS=['Football','F1'];
 const ALIAS={'bóng đá':'Football','bong da':'Football','soccer':'Football'};
 const sp=c=>{const x=(c.sport||'').trim();return ALIAS[x.toLowerCase()]||x};
@@ -82,7 +87,7 @@ function render(){
   const q=$('#q').value.trim().toLowerCase(),s=$('#sort').value;
   const base=cards.map((c,i)=>({...c,i})).filter(c=>tab==='all'||sp(c).toLowerCase()===tab);
   const list=base.filter(c=>(c.name||'').toLowerCase().includes(q));
-  const by={orig:(a,b)=>a.i-b.i,asc:(a,b)=>a.price-b.price,desc:(a,b)=>b.price-a.price,name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
+  const by={orig:(a,b)=>a.i-b.i,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]);
   const lab=tab==='all'?'':' '+labels[tab];
   $('#stat').textContent=base.length?base.length+' thẻ'+lab+'.':'Chưa có thẻ'+lab+' nào.';
@@ -90,12 +95,12 @@ function render(){
   if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
   for(const c of list){
     const src=encodeURI(c.img||'');
-    const d=document.createElement('div');d.className='pocket';
+    const d=document.createElement('div');d.className='pocket'+(/^sold/i.test(String(c.price).trim())?' sold':'');
     const b=document.createElement('button');b.className='pic';b.type='button';b.setAttribute('aria-label','Xem lớn: '+(c.name||'thẻ'));
     const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt=c.name||'Thẻ bóng đá';
-    const p=document.createElement('span');p.className='price';p.textContent=fmt(c.price,c.cur);
+    const p=document.createElement('span');p.className='price'+(isNaN(pn(c))?' tx':'');p.textContent=plabel(c);
     b.append(im,p);
-    b.onclick=()=>{$('#lb img').src=src;$('#lb img').alt=c.name||'';$('#lb p').textContent=(c.name||'')+'  '+fmt(c.price,c.cur);$('#lb').showModal()};
+    b.onclick=()=>{$('#lb img').src=src;$('#lb img').alt=c.name||'';$('#lb p').textContent=(c.name||'')+'  '+plabel(c);$('#lb').showModal()};
     const n=document.createElement('div');n.className='name';n.textContent=c.name||'(chưa đặt tên)';
     d.append(b,n);g.append(d);
   }
