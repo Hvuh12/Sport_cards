@@ -15,5 +15,6 @@
   { "img": "SportCards/Darwin-Nunez-01.jpg", "name": "Darwin Nunez auto Merlin /125", "price": 400000, "sport": "Football" },
   { "img": "SportCards/Rhys-Williams-01.jpg", "name": "Rhys-Williams auto team set", "price": 350000, "sport": "Football" },
   { "img": "SportCards/Cody-Gakpo-01.jpg", "name": "Cody Gakpo auto Museum /75", "price": 600000, "sport": "Football" },
-  { "img": "SportCards/Dominik-Szoboszlai-01.jpg", "name": "Dominik Szoboszlai auto UCC", "price": "SOLD", "sport": "Football" }
+  { "img": "SportCards/Dominik-Szoboszlai-01.jpg", "name": "Dominik Szoboszlai auto UCC", "price": "SOLD", "sport": "Football" },
+  { "img": "SportCards/Florian-Wirtz-01.jpg", "name": "Florian Wirtz auto Prizm", "price": "SOLD", "sport": "Football" }
 ]
