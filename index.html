@@ -36,10 +36,20 @@ input,select{font:inherit;color:var(--text);background:var(--field);border:1px s
 .pocket.sold .pic img{opacity:.45;filter:grayscale(1)}
 .name{font-weight:500;font-size:15px;line-height:1.3;padding:0 2px 2px;overflow-wrap:anywhere}
 .empty{grid-column:1/-1;color:var(--muted);padding:40px 0}
-dialog{border:0;background:transparent;padding:8px;max-width:96vw}
+dialog{border:0;background:transparent;padding:0;max-width:96vw;max-height:94vh;overflow:visible}
 dialog::backdrop{background:rgba(5,8,14,.8)}
-dialog img{max-width:92vw;max-height:80vh;border-radius:8px;display:block;margin:auto}
-dialog p{color:#fff;text-align:center;margin:10px 0 0;font:600 22px/1.2 var(--disp)}
+#lbc{position:relative;background:var(--bg);color:var(--text);border-radius:12px;padding:24px 20px 20px;max-height:92vh;overflow:auto}
+#lbx{position:absolute;top:4px;right:6px;border:0;background:none;font:400 30px/1 var(--body);color:var(--muted);cursor:pointer;padding:4px 10px}
+.lbimgs{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
+.lbimgs figure{margin:0;text-align:center}
+.lbimgs img{display:block;width:min(40vw,340px);aspect-ratio:5/7;object-fit:contain;background:#000;border-radius:8px}
+.lbimgs figcaption{color:var(--muted);font-size:14px;margin-top:6px}
+.lbinfo{text-align:center;margin-top:16px}
+.lbinfo h2{font:700 30px/1.1 var(--disp);margin:0 0 10px}
+.lbinfo p{margin:8px 0 0;color:var(--muted)}
+.lbprice{display:inline-block;background:var(--tag);color:var(--tag-t);font:700 22px/1 var(--disp);padding:6px 10px 5px;border-radius:3px}
+.lbprice.tx{background:var(--text);color:var(--bg);letter-spacing:.04em}
+@media(max-width:560px){.lbimgs img{width:min(76vw,320px)}}
 </style>
 </head>
 <body>
@@ -64,7 +74,7 @@ dialog p{color:#fff;text-align:center;margin:10px 0 0;font:600 22px/1.2 var(--di
   </div>
   <div class="grid" id="grid"></div>
 </main>
-<dialog id="lb"><img alt=""><p></p></dialog>
+<dialog id="lb"><div id="lbc"></div></dialog>
 <script>
 const $=s=>document.querySelector(s);
 let cards=[];
@@ -90,7 +100,7 @@ function render(){
   document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(status===b.dataset.s)));
   const q=$('#q').value.trim().toLowerCase(),s=$('#sort').value;
   const base=cards.map((c,i)=>({...c,i})).filter(c=>(tab==='all'||sp(c).toLowerCase()===tab)&&(!status||st(c)===status));
-  const list=base.filter(c=>(c.name||'').toLowerCase().includes(q));
+  const list=base.filter(c=>[c.name,c.brand,c.season,c.info].join(' ').toLowerCase().includes(q));
   const by={orig:(a,b)=>a.i-b.i,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]);
   const lab=[tab==='all'?'':labels[tab],status.toUpperCase()].filter(Boolean).map(x=>' '+x).join('');
@@ -104,12 +114,35 @@ function render(){
     const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt=c.name||'Thẻ bóng đá';
     const p=document.createElement('span');p.className='price'+(isNaN(pn(c))?' tx':'');p.textContent=plabel(c);
     b.append(im,p);
-    b.onclick=()=>{$('#lb img').src=src;$('#lb img').alt=c.name||'';$('#lb p').textContent=(c.name||'')+'  '+plabel(c);$('#lb').showModal()};
+    b.onclick=()=>openLb(c);
     const n=document.createElement('div');n.className='name';n.textContent=c.name||'(chưa đặt tên)';
     d.append(b,n);g.append(d);
   }
 }
-$('#lb').onclick=()=>$('#lb').close();
+function openLb(c){
+  const box=$('#lbc');box.textContent='';
+  const x=document.createElement('button');x.type='button';x.id='lbx';x.setAttribute('aria-label','Đóng');x.textContent='×';
+  const imgs=document.createElement('div');imgs.className='lbimgs';
+  const both=!!(c.img&&c.back);
+  [['img','Mặt trước'],['back','Mặt sau']].forEach(([k,t])=>{
+    if(!c[k])return;
+    const f=document.createElement('figure');
+    const im=document.createElement('img');im.src=encodeURI(c[k]);im.alt=(c.name||'Thẻ')+(both?' - '+t:'');
+    f.append(im);
+    if(both){const cap=document.createElement('figcaption');cap.textContent=t;f.append(cap)}
+    imgs.append(f);
+  });
+  const info=document.createElement('div');info.className='lbinfo';
+  const h=document.createElement('h2');h.textContent=c.name||'';
+  const pr=document.createElement('div');pr.className='lbprice'+(isNaN(pn(c))?' tx':'');pr.textContent=plabel(c);
+  info.append(h,pr);
+    if(c.brand){const e=document.createElement('p');e.textContent='Hãng: '+c.brand;info.append(e)}
+  if(c.season){const e=document.createElement('p');e.textContent='Mùa thẻ: '+c.season;info.append(e)}
+  if(c.info){const e=document.createElement('p');e.textContent=c.info;info.append(e)}
+  box.append(x,imgs,info);
+  $('#lb').showModal();
+}
+$('#lb').onclick=e=>{if(e.target===$('#lb')||e.target.id==='lbx')$('#lb').close()};
 $('#q').oninput=render;$('#sort').onchange=render;
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{status=status===b.dataset.s?'':b.dataset.s;render()});
 fetch('cards.json?v='+Date.now()).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
