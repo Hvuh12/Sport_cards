@@ -16,7 +16,10 @@
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--body)}
 main{max-width:1120px;margin:0 auto;padding:32px 16px 56px}
 h1{font:700 clamp(36px,7vw,60px)/1 var(--disp);margin:0 0 8px;letter-spacing:.01em}
-#stat{color:var(--muted);margin:0 0 22px;max-width:60ch}
+#stat{color:var(--muted);margin:0 0 16px;max-width:60ch}
+.contact{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;color:var(--muted)}
+.contact a{color:var(--text);text-decoration:none;font-weight:500;background:var(--pocket);border:1px solid var(--edge);border-radius:999px;padding:6px 14px}
+.contact a:hover{border-color:var(--text)}
 .bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
 input,select{font:inherit;color:var(--text);background:var(--field);border:1px solid var(--edge);border-radius:8px;padding:9px 12px}
 .bar input{flex:1 1 200px}
@@ -40,6 +43,10 @@ dialog p{color:#fff;text-align:center;margin:10px 0 0;font:600 22px/1.2 var(--di
 <body>
 <main>
   <h1>Sport Card Collection</h1>
+  <p class="contact">Muốn offer? Nhắn mình qua
+    <a href="https://www.facebook.com/chosancut0610/" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://www.instagram.com/ha_vuu0610/" target="_blank" rel="noopener">Instagram</a>
+  </p>
   <p id="stat">Đang tải danh sách thẻ…</p>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="bar">
@@ -77,9 +84,8 @@ function render(){
   const list=base.filter(c=>(c.name||'').toLowerCase().includes(q));
   const by={orig:(a,b)=>a.i-b.i,asc:(a,b)=>a.price-b.price,desc:(a,b)=>b.price-a.price,name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]);
-  const tot={};base.forEach(c=>{const k=c.cur||'VND';tot[k]=(tot[k]||0)+(+c.price||0)});
   const lab=tab==='all'?'':' '+labels[tab];
-  $('#stat').textContent=base.length?base.length+' thẻ'+lab+'. Tổng giá trị '+Object.entries(tot).map(([k,v])=>fmt(v,k)).join(' + ')+'.':'Chưa có thẻ'+lab+' nào.';
+  $('#stat').textContent=base.length?base.length+' thẻ'+lab+'.':'Chưa có thẻ'+lab+' nào.';
   const g=$('#grid');g.textContent='';
   if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
   for(const c of list){
