@@ -111,5 +111,7 @@ fetch('cards.json?v='+Date.now()).then(r=>{if(!r.ok)throw new Error(r.status);re
   .then(d=>{cards=Array.isArray(d)?d:[];render()})
   .catch(()=>{$('#stat').textContent='Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.'});
 </script>
+  <script data-goatcounter="https://vuhoanghauit.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
