@@ -63,6 +63,7 @@ dialog::backdrop{background:rgba(5,8,14,.8)}
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="bar">
     <input type="search" id="q" placeholder="Tìm theo tên thẻ" aria-label="Tìm theo tên thẻ">
+    <button type="button" class="chip" data-s="sale" title="Còn hàng" aria-pressed="false">FOR SALE</button>
     <button type="button" class="chip" data-s="nfs" title="Not For Sale" aria-pressed="false">NFS</button>
     <button type="button" class="chip" data-s="sold" title="Đã bán" aria-pressed="false">SOLD</button>
     <select id="sort" aria-label="Sắp xếp">
@@ -85,7 +86,8 @@ const plabel=c=>isNaN(pn(c))?(String(c.price??'').trim().toUpperCase()||'—'):f
 const cmp=d=>(a,b)=>{const x=pn(a),y=pn(b);return isNaN(x)?(isNaN(y)?0:1):isNaN(y)?-1:d*(x-y)};
 const ALWAYS=['Football','F1'];
 const ALIAS={'bóng đá':'Football','bong da':'Football','soccer':'Football'};
-const st=c=>{const t=String(c.price??'').trim().toLowerCase();return /^sold/.test(t)?'sold':/^(nfs|nft|not for sale)/.test(t)?'nfs':''};
+const st=c=>{const t=String(c.price??'').trim().toLowerCase();return /^sold/.test(t)?'sold':/^(nfs|nft|not for sale)/.test(t)?'nfs':!isNaN(pn(c))?'sale':''};
+const SL={sale:'FOR SALE',nfs:'NFS',sold:'SOLD'};
 const sp=c=>{const x=(c.sport||'').trim();return ALIAS[x.toLowerCase()]||x};
 let tab='all',status='',labels={};
 function drawTabs(){
@@ -103,7 +105,7 @@ function render(){
   const list=base.filter(c=>[c.name,c.brand,c.season,c.info].join(' ').toLowerCase().includes(q));
   const by={orig:(a,b)=>a.i-b.i,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]);
-  const lab=[tab==='all'?'':labels[tab],status.toUpperCase()].filter(Boolean).map(x=>' '+x).join('');
+  const lab=[tab==='all'?'':labels[tab],SL[status]].filter(Boolean).map(x=>' '+x).join('');
   $('#stat').textContent=base.length?base.length+' thẻ'+lab+'.':'Chưa có thẻ'+lab+' nào.';
   const g=$('#grid');g.textContent='';
   if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(status?'Chưa có thẻ nào ở mục này.':tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
@@ -136,7 +138,7 @@ function openLb(c){
   const h=document.createElement('h2');h.textContent=c.name||'';
   const pr=document.createElement('div');pr.className='lbprice'+(isNaN(pn(c))?' tx':'');pr.textContent=plabel(c);
   info.append(h,pr);
-    if(c.brand){const e=document.createElement('p');e.textContent='Hãng: '+c.brand;info.append(e)}
+  if(c.brand){const e=document.createElement('p');e.textContent='Hãng: '+c.brand;info.append(e)}
   if(c.season){const e=document.createElement('p');e.textContent='Mùa thẻ: '+c.season;info.append(e)}
   if(c.info){const e=document.createElement('p');e.textContent=c.info;info.append(e)}
   box.append(x,imgs,info);
