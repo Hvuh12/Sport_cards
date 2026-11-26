@@ -21,6 +21,8 @@ h1{font:700 clamp(36px,7vw,60px)/1 var(--disp);margin:0 0 8px;letter-spacing:.01
 .bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
 input,select{font:inherit;color:var(--text);background:var(--field);border:1px solid var(--edge);border-radius:8px;padding:9px 12px}
 .bar input{flex:1 1 200px}
+.chip{font:700 18px/1 var(--disp);letter-spacing:.04em;color:var(--text);background:var(--field);border:1px solid var(--edge);border-radius:8px;padding:0 16px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
 :focus-visible{outline:3px solid var(--tag);outline-offset:2px}
 .tabs{display:flex;gap:4px;margin:0 0 18px;border-bottom:1px solid var(--edge);overflow-x:auto}
 .tabs button{font:700 21px/1 var(--disp);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px 8px;margin-bottom:-1px;cursor:pointer;white-space:nowrap}
@@ -51,6 +53,8 @@ dialog p{color:#fff;text-align:center;margin:10px 0 0;font:600 22px/1.2 var(--di
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="bar">
     <input type="search" id="q" placeholder="Tìm theo tên thẻ" aria-label="Tìm theo tên thẻ">
+    <button type="button" class="chip" data-s="nfs" title="Not For Sale" aria-pressed="false">NFS</button>
+    <button type="button" class="chip" data-s="sold" title="Đã bán" aria-pressed="false">SOLD</button>
     <select id="sort" aria-label="Sắp xếp">
       <option value="orig">Thứ tự trong danh sách</option>
       <option value="asc">Giá thấp đến cao</option>
@@ -73,25 +77,26 @@ const ALWAYS=['Football','F1'];
 const ALIAS={'bóng đá':'Football','bong da':'Football','soccer':'Football'};
 const st=c=>{const t=String(c.price??'').trim().toLowerCase();return /^sold/.test(t)?'sold':/^(nfs|nft|not for sale)/.test(t)?'nfs':''};
 const sp=c=>{const x=(c.sport||'').trim();return ALIAS[x.toLowerCase()]||x};
-let tab='all',labels={};
+let tab='all',status='',labels={};
 function drawTabs(){
   const m=new Map();ALWAYS.forEach(x=>m.set(x.toLowerCase(),x));
   cards.forEach(c=>{const x=sp(c);if(x&&!m.has(x.toLowerCase()))m.set(x.toLowerCase(),x)});
   labels={};const box=$('#tabs');box.textContent='';
   const mk=(key,label,tip)=>{if(key!=='all')labels[key]=label;const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(tab===key));b.textContent=label;if(tip)b.title=tip;b.onclick=()=>{tab=key;render()};box.append(b)};
-  mk('all','ALL');m.forEach((label,key)=>mk(key,label));mk('nfs','NFS','Not For Sale');mk('sold','SOLD','Đã bán');
+  mk('all','ALL');m.forEach((label,key)=>mk(key,label));
 }
 function render(){
   drawTabs();
+  document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(status===b.dataset.s)));
   const q=$('#q').value.trim().toLowerCase(),s=$('#sort').value;
-  const base=cards.map((c,i)=>({...c,i})).filter(c=>tab==='all'||(tab==='nfs'||tab==='sold'?st(c)===tab:sp(c).toLowerCase()===tab));
+  const base=cards.map((c,i)=>({...c,i})).filter(c=>(tab==='all'||sp(c).toLowerCase()===tab)&&(!status||st(c)===status));
   const list=base.filter(c=>(c.name||'').toLowerCase().includes(q));
   const by={orig:(a,b)=>a.i-b.i,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]);
-  const lab=tab==='all'?'':' '+labels[tab];
+  const lab=[tab==='all'?'':labels[tab],status.toUpperCase()].filter(Boolean).map(x=>' '+x).join('');
   $('#stat').textContent=base.length?base.length+' thẻ'+lab+'.':'Chưa có thẻ'+lab+' nào.';
   const g=$('#grid');g.textContent='';
-  if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':tab==='nfs'||tab==='sold'?'Chưa có thẻ nào ở mục này.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
+  if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(status?'Chưa có thẻ nào ở mục này.':tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
   for(const c of list){
     const src=encodeURI(c.img||'');
     const d=document.createElement('div');d.className='pocket'+(st(c)==='sold'?' sold':'');
@@ -106,6 +111,7 @@ function render(){
 }
 $('#lb').onclick=()=>$('#lb').close();
 $('#q').oninput=render;$('#sort').onchange=render;
+document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{status=status===b.dataset.s?'':b.dataset.s;render()});
 fetch('cards.json?v='+Date.now()).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
   .then(d=>{cards=Array.isArray(d)?d:[];render()})
   .catch(()=>{$('#stat').textContent='Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.'});
