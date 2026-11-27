@@ -84,6 +84,37 @@ dialog::backdrop { background:#000d; backdrop-filter:blur(6px); }
   .lbimgs img { max-width:80vw; max-height:70vh; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; animation:none!important; } }
+/* Card Detail V2 */
+#lb { width:min(940px,96vw); margin:auto; }
+#lbc { padding:22px; max-height:92dvh; }
+.detail-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:1px solid var(--edge); }
+.detail-mark { font:700 23px/1 var(--disp); color:var(--tag); letter-spacing:.04em; }
+.detail-mark span { color:var(--text); }
+#lbx { position:static; width:40px; height:40px; border:1px solid var(--edge); border-radius:8px; }
+.detail-layout { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:28px; align-items:start; }
+.detail-media,.detail-info { min-width:0; }
+.detail-stage { display:grid; place-items:center; background:#000; border:1px solid var(--edge); border-radius:10px; min-height:240px; height:clamp(240px,53vh,490px); overflow:hidden; }
+.detail-stage img { display:block; width:100%; height:100%; min-height:0; object-fit:contain; }
+.detail-views { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.detail-views button,.detail-action { font:500 14px/1.3 var(--body); background:var(--pocket); color:var(--text); border:1px solid var(--edge); border-radius:7px; padding:10px 12px; cursor:pointer; text-decoration:none; }
+.detail-views button[aria-pressed=true] { border-color:var(--tag); color:var(--tag); background:#d4b67c12; }
+.detail-caption,.detail-note { font-size:13px; color:var(--muted); margin:10px 0; }
+.detail-kicker { color:var(--tag); font-size:12px; text-transform:uppercase; letter-spacing:.12em; }
+.detail-info h2 { font:700 clamp(27px,4vw,42px)/1.08 var(--disp); margin:8px 0 14px; overflow-wrap:anywhere; }
+.detail-status { display:inline-block; font:700 15px/1 var(--disp); letter-spacing:.08em; border:1px solid var(--edge); border-radius:5px; padding:7px 9px; color:var(--muted); }
+.detail-status.sale { color:#a5d6b4; border-color:#365743; }
+.detail-price { font:700 35px/1.1 var(--disp); color:var(--tag); margin:12px 0; }
+.detail-specs { margin:18px 0; border-top:1px solid var(--edge); }
+.detail-specs div { display:grid; grid-template-columns:105px minmax(0,1fr); gap:10px; padding:10px 0; border-bottom:1px solid var(--edge); }
+.detail-specs dt { color:var(--muted); font-size:13px; }
+.detail-specs dd { margin:0; overflow-wrap:anywhere; white-space:pre-wrap; }
+.detail-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.detail-action { flex:1 1 130px; text-align:center; }
+.detail-action.primary { background:var(--tag); color:var(--tag-t); border-color:var(--tag); font-weight:700; }
+.detail-action:hover,.detail-views button:hover { border-color:var(--tag); }
+.detail-note { border-top:1px solid var(--edge); padding-top:12px; line-height:1.5; }
+@media(max-width:650px) { #lbc { padding:14px; } .detail-layout { grid-template-columns:minmax(0,1fr); gap:18px; } .detail-stage { height:clamp(220px,48dvh,420px); } .detail-header { margin-bottom:12px; } }
+
 </style>
 </head>
 <body>
@@ -194,27 +225,58 @@ function render(){
   }
 }
 function openLb(c){
-  const box=$('#lbc');box.textContent='';
-  const x=document.createElement('button');x.type='button';x.id='lbx';x.setAttribute('aria-label','Đóng');x.textContent='×';
-  const imgs=document.createElement('div');imgs.className='lbimgs';
-  const both=!!(c.img&&c.back);
-  [['img','Mặt trước'],['back','Mặt sau']].forEach(([k,t])=>{
-    if(!c[k])return;
-    const f=document.createElement('figure');
-    const im=document.createElement('img');im.src=encodeURI(c[k]);im.alt=(c.name||'Thẻ')+(both?' - '+t:'');
-    f.append(im);
-    if(both){const cap=document.createElement('figcaption');cap.textContent=t;f.append(cap)}
-    imgs.append(f);
+  const box=$('#lbc'); box.replaceChildren();
+  const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
+  const header=make('div','detail-header');
+  const mark=make('div','detail-mark','HV');mark.append(make('span','','CARDS'));
+  const x=make('button','','×');x.type='button';x.id='lbx';x.setAttribute('aria-label','Đóng chi tiết card');
+  header.append(mark,x);
+  const layout=make('div','detail-layout'),media=make('div','detail-media'),info=make('div','detail-info');
+  const stage=make('div','detail-stage'),views=make('div','detail-views'),caption=make('p','detail-caption');
+  caption.setAttribute('aria-live','polite');
+  const im=make('img'); stage.append(im);
+  const photos=[
+    {src:c.img,label:'Front',description:'Mặt trước · Ảnh gallery'},
+    {src:c.back,label:'Back',description:'Mặt sau · Ảnh gallery'},
+    {src:c.actual,label:'Actual front',description:'Mặt trước · Ảnh chụp thực tế'},
+    {src:c.actualBack,label:'Actual back',description:'Mặt sau · Ảnh chụp thực tế'}
+  ].filter(p=>typeof p.src==='string'&&p.src.trim());
+  const buttons=[];
+  function selectPhoto(i){
+    const p=photos[i];if(!p)return;
+    im.hidden=false;stage.replaceChildren(im);im.alt=(c.name||'Card')+' – '+p.label;im.src=encodeURI(p.src);
+    caption.textContent=p.description;
+    buttons.forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)));
+  }
+  im.onerror=()=>{im.hidden=true;stage.replaceChildren(make('p','detail-caption','Không tải được ảnh.'))};
+  photos.forEach((p,i)=>{const b=make('button','',p.label);b.type='button';b.onclick=()=>selectPhoto(i);buttons.push(b);views.append(b)});
+  if(photos.length)selectPhoto(0);else stage.replaceChildren(make('p','detail-caption','Chưa có ảnh card.'));
+  media.append(stage,views,caption);
+  const state=st(c);
+  info.append(make('div','detail-kicker',sp(c)||'Sports card'));
+  const title=make('h2','',c.name||'Untitled card');title.id='detail-title';info.append(title);
+  info.append(make('span','detail-status '+state,SL[state]||'STATUS UNKNOWN'));
+  if(state==='sale')info.append(make('div','detail-price',plabel(c)));
+  const specs=make('dl','detail-specs');
+  [['Hãng',c.brand],['Mùa thẻ',c.season],['Bộ thẻ',c.set],['Serial',c.serial],['Loại card',Array.isArray(c.type)?c.type.join(', '):c.type],['Grade',c.grade],['Thông tin',c.info]].forEach(([label,value])=>{
+    if(value==null||String(value).trim()==='')return;
+    const row=make('div');row.append(make('dt','',label),make('dd','',String(value)));specs.append(row);
   });
-  const info=document.createElement('div');info.className='lbinfo';
-  const h=document.createElement('h2');h.textContent=c.name||'';
-  const pr=document.createElement('div');pr.className='lbprice'+(isNaN(pn(c))?' tx':'');pr.textContent=plabel(c);
-  info.append(h,pr);
-  if(c.brand){const e=document.createElement('p');e.textContent='Hãng: '+c.brand;info.append(e)}
-  if(c.season){const e=document.createElement('p');e.textContent='Mùa thẻ: '+c.season;info.append(e)}
-  if(c.info){const e=document.createElement('p');e.textContent=c.info;info.append(e)}
-  box.append(x,imgs,info);
-  $('#lb').showModal();
+  if(specs.children.length)info.append(specs);
+  const actions=make('div','detail-actions');
+  function contact(label,url,primary){const a=make('a','detail-action'+(primary?' primary':''),label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a)}
+  if(state!=='sold'){
+    contact(state==='sale'?'Contact to Buy / Trade':'Contact Collector','https://www.facebook.com/chosancut0610/',true);
+    contact('Instagram','https://www.instagram.com/ha_vuu0610/',false);
+  }
+  const copy=make('button','detail-action','Copy card details');copy.type='button';copy.onclick=async()=>{
+    const text=[c.name,c.brand,c.season,c.info,plabel(c),location.href.split('#')[0]].filter(Boolean).join('\n');
+    try{await navigator.clipboard.writeText(text);copy.textContent='Copied!'}catch{copy.textContent='Không sao chép được';}
+  };actions.append(copy);info.append(actions);
+  const hasActual=photos.some(p=>p.label.startsWith('Actual'));
+  info.append(make('p','detail-note','Ảnh gallery có thể được tăng nét hoặc cân bằng ánh sáng để trưng bày. '+(hasActual?'Vui lòng xem ảnh Actual để tham khảo tình trạng thực tế.':'Ảnh chụp thực tế có thể được cung cấp khi liên hệ.')+' Không dùng ảnh đã xử lý để xác định tình trạng card.'));
+  layout.append(media,info);box.append(header,layout);
+  $('#lb').setAttribute('aria-labelledby','detail-title');$('#lb').showModal();box.scrollTop=0;
 }
 $('#lb').onclick=e=>{if(e.target===$('#lb')||e.target.id==='lbx')$('#lb').close()};
 $('#q').oninput=render;
