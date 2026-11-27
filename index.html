@@ -110,7 +110,7 @@ dialog::backdrop { background:#000d; backdrop-filter:blur(6px); }
 .detail-specs dd { margin:0; overflow-wrap:anywhere; white-space:pre-wrap; }
 .detail-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
 .detail-action { flex:1 1 130px; text-align:center; }
-.detail-action.primary { background:var(--tag); color:var(--tag-t); border-color:var(--tag); font-weight:700; }
+.detail-action.primary { flex:1 0 100%; min-height:46px; display:flex; align-items:center; justify-content:center; background:var(--tag); color:var(--tag-t); border-color:var(--tag); font-weight:700; }
 .detail-action:hover,.detail-views button:hover { border-color:var(--tag); }
 .detail-note { border-top:1px solid var(--edge); padding-top:12px; line-height:1.5; }
 @media(max-width:650px) { #lbc { padding:14px; } .detail-layout { grid-template-columns:minmax(0,1fr); gap:18px; } .detail-stage { height:clamp(220px,48dvh,420px); } .detail-header { margin-bottom:12px; } }
@@ -326,7 +326,6 @@ function openLb(c){
   function contact(label,url,primary){const a=make('a','detail-action'+(primary?' primary':''),label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a)}
   if(state!=='sold'){
     contact(state==='sale'?'Contact to Buy / Trade':'Contact Collector','https://www.facebook.com/chosancut0610/',true);
-    contact('Instagram','https://www.instagram.com/ha_vuu0610/',false);
   }
   const copyStatus=make('p','detail-copy-status');copyStatus.setAttribute('role','status');
   const fallback=make('textarea','detail-share-fallback');fallback.readOnly=true;fallback.hidden=true;fallback.setAttribute('aria-label','Nội dung để sao chép thủ công');
