@@ -9,327 +9,81 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light;--bg:#fff;--pocket:#f5f6f8;--edge:#dcdfe5;--text:#141a24;--muted:#5d6675;--tag:#ffd23f;--tag-t:#1a1500;--field:#fff;
---disp:"Barlow Condensed","Arial Narrow",Impact,sans-serif;--body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--body)}
-main{max-width:1120px;margin:0 auto;padding:32px 16px 56px}
-h1{font:700 clamp(36px,7vw,60px)/1 var(--disp);margin:0 0 8px;letter-spacing:.01em}
-#stat{color:var(--muted);margin:0 0 16px;max-width:60ch}
-.contact{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;color:var(--muted)}
-.contact a{color:var(--text);text-decoration:none;font-weight:500;background:var(--pocket);border:1px solid var(--edge);border-radius:999px;padding:6px 14px}
-.contact a:hover{border-color:var(--text)}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-input,select{font:inherit;color:var(--text);background:var(--field);border:1px solid var(--edge);border-radius:8px;padding:9px 12px}
-.bar input{flex:1 1 200px}
-.chip{font:700 18px/1 var(--disp);letter-spacing:.04em;color:var(--text);background:var(--field);border:1px solid var(--edge);border-radius:8px;padding:0 16px;cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
-:focus-visible{outline:3px solid var(--tag);outline-offset:2px}
-.tabs{display:flex;gap:4px;margin:0 0 18px;border-bottom:1px solid var(--edge);overflow-x:auto}
-.tabs button{font:700 21px/1 var(--disp);color:var(--muted);background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px 8px;margin-bottom:-1px;cursor:pointer;white-space:nowrap}
-.tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--tag)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}
-.pocket{background:var(--pocket);border:1px solid var(--edge);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:8px}
-.pic{position:relative;display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;border-radius:4px}
-.pic img{display:block;width:100%;aspect-ratio:5/7;object-fit:cover;border-radius:4px;background:var(--edge)}
-.price{position:absolute;right:-6px;bottom:10px;background:var(--tag);color:var(--tag-t);font:700 19px/1 var(--disp);padding:5px 9px 4px;border-radius:3px;transform:rotate(-2deg);box-shadow:0 1px 2px rgba(0,0,0,.35)}
-.price.tx{background:var(--text);color:var(--bg);letter-spacing:.04em}
-.pocket.sold .pic img{opacity:.45;filter:grayscale(1)}
-.name{font-weight:500;font-size:15px;line-height:1.3;padding:0 2px 2px;overflow-wrap:anywhere}
-.empty{grid-column:1/-1;color:var(--muted);padding:40px 0}
-dialog{border:0;background:transparent;padding:0;max-width:96vw;max-height:94vh;overflow:visible}
-dialog::backdrop{background:rgba(5,8,14,.8)}
-#lbc{position:relative;background:var(--bg);color:var(--text);border-radius:12px;padding:24px 20px 20px;max-height:92vh;overflow:auto}
-#lbx{position:absolute;top:4px;right:6px;border:0;background:none;font:400 30px/1 var(--body);color:var(--muted);cursor:pointer;padding:4px 10px}
-.lbimgs{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
-.lbimgs figure{margin:0;text-align:center}
-.lbimgs img{display:block;width:min(40vw,340px);aspect-ratio:5/7;object-fit:contain;background:#000;border-radius:8px}
-.lbimgs figcaption{color:var(--muted);font-size:14px;margin-top:6px}
-.lbinfo{text-align:center;margin-top:16px}
-.lbinfo h2{font:700 30px/1.1 var(--disp);margin:0 0 10px}
-.lbinfo p{margin:8px 0 0;color:var(--muted)}
-.lbprice{display:inline-block;background:var(--tag);color:var(--tag-t);font:700 22px/1 var(--disp);padding:6px 10px 5px;border-radius:3px}
-.lbprice.tx{background:var(--text);color:var(--bg);letter-spacing:.04em}
-@media(max-width:560px){.lbimgs img{width:min(76vw,320px)}}
-  
-/* ===== HVCARDS DARK PREMIUM THEME ===== */
 
 :root {
-    color-scheme: dark;
-    --bg: #0B0B0D;
-    --pocket: #161618;
-    --edge: #2A2A2E;
-    --text: #F5F5F5;
-    --muted: #929292;
-    --tag: #D4B67C;
-    --tag-t: #0B0B0D;
-    --field: #141416;
+  color-scheme: dark;
+  --bg:#0b0b0d; --pocket:#161618; --edge:#2a2a2e;
+  --text:#f5f5f5; --muted:#a0a0a5; --tag:#d4b67c;
+  --tag-t:#0b0b0d; --field:#141416;
+  --disp:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
-
-/* Page layout */
-
-body {
-    background: var(--bg);
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:16px/1.5 var(--body); }
+main { max-width:1280px; margin:auto; padding:40px 24px 64px; }
+.brand { font:700 clamp(48px,8vw,76px)/1 var(--disp); letter-spacing:-.025em; color:var(--tag); margin:0 0 4px; }
+.brand span { color:var(--text); }
+.brand-subtitle { color:var(--muted); font-size:11px; letter-spacing:.24em; margin:0 0 24px; }
+.contact { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 24px; color:var(--muted); font-size:14px; }
+.contact a { color:var(--text); text-decoration:none; font-weight:500; background:var(--pocket); border:1px solid var(--edge); border-radius:6px; padding:8px 16px; }
+.contact a:hover { color:var(--tag); border-color:var(--tag); background:#201d17; }
+#stat { color:var(--muted); margin:0 0 16px; overflow-wrap:anywhere; }
+.tabs { display:flex; gap:4px; margin:0 0 24px; border-bottom:1px solid var(--edge); overflow-x:auto; }
+.tabs button { font:700 21px/1 var(--disp); color:var(--muted); background:none; border:0; border-bottom:3px solid transparent; padding:12px 18px; cursor:pointer; white-space:nowrap; }
+.tabs button[aria-selected="true"] { color:var(--tag); border-bottom-color:var(--tag); }
+.bar { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px; }
+input,select { font:inherit; color:var(--text); background:var(--field); border:1px solid var(--edge); border-radius:8px; padding:9px 12px; min-height:46px; }
+.chip { font:700 18px/1 var(--disp); letter-spacing:.04em; color:var(--text); background:var(--field); border:1px solid var(--edge); border-radius:8px; padding:0 16px; min-height:46px; cursor:pointer; }
+.chip[aria-pressed="true"] { background:var(--tag); color:var(--tag-t); border-color:var(--tag); }
+.chip:hover,select:hover { border-color:#8a754f; }
+:focus-visible { outline:2px solid var(--tag); outline-offset:3px; }
+.search-box { position:relative; display:flex; align-items:center; flex:1 1 280px; min-width:0; background:var(--field); border:1px solid var(--edge); border-radius:8px; }
+.search-box:focus-within { border-color:var(--tag); box-shadow:0 0 0 3px #d4b67c18; }
+.search-icon { position:absolute; left:14px; color:var(--tag); pointer-events:none; }
+.search-box input { width:100%; min-width:0; padding:12px 40px 12px 44px; background:transparent; border:0; outline:none; }
+.search-box input::placeholder { color:var(--muted); }
+.search-box input::-webkit-search-cancel-button { display:none; }
+#clearSearch { position:absolute; right:7px; width:32px; height:32px; border:0; border-radius:5px; background:transparent; color:var(--muted); font-size:24px; line-height:1; cursor:pointer; }
+#clearSearch:hover { background:var(--edge); color:var(--tag); }
+#clearSearch[hidden] { display:none; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:20px; }
+.pocket { min-width:0; background:var(--pocket); border:1px solid var(--edge); border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:12px; transition:transform .25s,border-color .25s,box-shadow .25s; }
+@media (hover:hover) { .pocket:hover { transform:translateY(-4px); border-color:#8a754f; box-shadow:0 12px 28px #0006; } }
+.pic { position:relative; display:block; width:100%; aspect-ratio:5/7; padding:0; border:0; background:#000; cursor:zoom-in; border-radius:5px; overflow:hidden; }
+.pic img { display:block; width:100%; height:100%; object-fit:contain; object-position:center; }
+.price { align-self:flex-end; max-width:100%; overflow-wrap:anywhere; background:var(--tag); color:var(--tag-t); font:700 18px/1 var(--disp); padding:6px 10px; border-radius:4px; }
+.price.tx,.lbprice.tx { background:#252830; color:#d1d5db; }
+.pocket.sold .price { background:#29292d; color:#aaa; }
+.pocket.sold .pic img { opacity:.45; filter:grayscale(1); }
+.name { font-weight:500; font-size:14px; line-height:1.5; padding:0 3px 4px; overflow-wrap:anywhere; }
+.empty { grid-column:1/-1; color:var(--muted); padding:40px 16px; text-align:center; border:1px dashed var(--edge); border-radius:10px; }
+dialog { border:0; background:transparent; padding:0; max-width:96vw; max-height:94vh; overflow:visible; }
+dialog::backdrop { background:#000d; backdrop-filter:blur(6px); }
+#lbc { position:relative; background:var(--field); color:var(--text); border:1px solid #343438; border-radius:14px; padding:44px 20px 20px; max-height:92vh; overflow:auto; box-shadow:0 24px 80px #0009; }
+#lbx { position:absolute; top:4px; right:6px; border:0; background:none; font:400 30px/1 var(--body); color:var(--muted); cursor:pointer; padding:4px 10px; }
+#lbx:hover { color:var(--tag); }
+.lbimgs { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
+.lbimgs figure { margin:0; text-align:center; }
+.lbimgs img { display:block; width:auto; height:auto; max-width:min(40vw,380px); max-height:65vh; object-fit:contain; background:#000; border-radius:6px; }
+.lbimgs figcaption { color:var(--muted); font-size:14px; margin-top:6px; }
+.lbinfo { text-align:center; margin-top:16px; }
+.lbinfo h2 { font:700 30px/1.1 var(--disp); margin:0 0 10px; }
+.lbinfo p { margin:8px 0 0; color:var(--muted); }
+.lbprice { display:inline-block; background:var(--tag); color:var(--tag-t); font:700 22px/1 var(--disp); padding:6px 10px; border-radius:5px; }
+@media(max-width:600px) {
+  main { padding:28px 12px 40px; }
+  .brand { font-size:52px; }
+  .brand-subtitle { font-size:9px; letter-spacing:.18em; }
+  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .pocket { padding:6px; gap:8px; }
+  .name { font-size:13px; }
+  .price { font-size:16px; }
+  .search-box { flex-basis:100%; }
+  .bar select { width:100%; }
+  .chip { flex:1; padding:0 8px; font-size:16px; }
+  .lbimgs img { max-width:80vw; max-height:70vh; }
 }
-
-main {
-    max-width: 1280px;
-    padding: 40px 24px 64px;
-}
-
-/* Brand */
-
-.brand {
-    color: var(--tag);
-    font-size: clamp(48px, 8vw, 76px);
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    margin-bottom: 4px;
-}
-
-.brand span {
-    color: var(--text);
-}
-
-.brand-subtitle {
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 0.24em;
-    font-weight: 500;
-    margin: 0 0 24px;
-}
-
-/* Social links */
-
-.contact {
-    font-size: 14px;
-    margin-bottom: 24px;
-}
-
-.contact a {
-    border-radius: 6px;
-    padding: 8px 16px;
-    transition: all 0.2s ease;
-}
-
-.contact a:hover {
-    color: var(--tag);
-    border-color: var(--tag);
-    background: #201D17;
-}
-
-/* Search and filters */
-
-.bar {
-    gap: 10px;
-    margin-bottom: 28px;
-}
-
-input, select, .chip {
-    min-height: 42px;
-    border-radius: 6px;
-    transition: border-color 0.2s ease,
-                background 0.2s ease;
-}
-
-input:hover,
-select:hover,
-.chip:hover {
-    border-color: #71634C;
-}
-
-input::placeholder {
-    color: var(--muted);
-}
-
-.chip[aria-pressed="true"] {
-    background: var(--tag);
-    color: var(--tag-t);
-    border-color: var(--tag);
-}
-
-/* Sport tabs */
-
-.tabs {
-    margin-bottom: 24px;
-}
-
-.tabs button {
-    padding: 12px 18px;
-    transition: color 0.2s ease;
-}
-
-.tabs button:hover {
-    color: var(--text);
-}
-
-.tabs button[aria-selected="true"] {
-    color: var(--tag);
-    border-bottom-color: var(--tag);
-}
-
-/* Card gallery */
-
-.grid {
-    grid-template-columns:
-        repeat(auto-fill, minmax(175px, 1fr));
-    gap: 20px;
-}
-
-.pocket {
-    background: var(--pocket);
-    border: 1px solid var(--edge);
-    border-radius: 10px;
-    padding: 10px;
-    gap: 12px;
-    transition: transform 0.25s ease,
-                border-color 0.25s ease,
-                box-shadow 0.25s ease;
-}
-
-@media (hover: hover) {
-    .pocket:hover {
-        transform: translateY(-5px);
-        border-color: #8A754F;
-        box-shadow: 0 12px 28px rgba(0,0,0,.35);
-    }
-}
-
-.pic {
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.pic img {
-    background: #000;
-    object-fit: contain;
-    border-radius: 5px;
-}
-
-.name {
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.5;
-    font-weight: 500;
-    padding: 0 3px 4px;
-}
-
-/* Price and status labels */
-
-.price {
-    right: 7px;
-    bottom: 7px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 18px;
-    transform: none;
-    background: var(--tag);
-    color: var(--tag-t);
-}
-
-.price.tx {
-    background: #252830;
-    color: #D1D5DB;
-}
-
-.pocket.sold .price {
-    background: #29292D;
-    color: #AAAAAA;
-}
-
-.pocket.sold .pic img {
-    opacity: .45;
-    filter: grayscale(1);
-}
-
-/* Card detail popup */
-
-dialog::backdrop {
-    background: rgba(0,0,0,.85);
-    backdrop-filter: blur(6px);
-}
-
-#lbc {
-    background: #141416;
-    border: 1px solid #343438;
-    border-radius: 14px;
-    box-shadow: 0 24px 80px rgba(0,0,0,.6);
-}
-
-#lbx:hover {
-    color: var(--tag);
-}
-
-.lbprice {
-    border-radius: 5px;
-}
-
-.lbprice.tx {
-    background: #252830;
-    color: #D1D5DB;
-}
-
-/* Mobile responsive */
-
-@media (max-width: 600px) {
-    main {
-        padding: 28px 12px 40px;
-    }
-
-    .brand {
-        font-size: 52px;
-    }
-
-    .brand-subtitle {
-        font-size: 9px;
-        letter-spacing: 0.18em;
-    }
-
-    .grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-        gap: 10px;
-    }
-
-    .pocket {
-        min-width: 0;
-        padding: 6px;
-        gap: 8px;
-    }
-
-    .name {
-        font-size: 13px;
-    }
-
-    .price {
-        font-size: 16px;
-        right: 5px;
-        bottom: 5px;
-    }
-
-    .bar input {
-        flex-basis: 100%;
-        min-width: 0;
-    }
-
-    .bar select {
-        width: 100%;
-    }
-
-    .chip {
-        flex: 1;
-        padding: 0 8px;
-        font-size: 16px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        transition: none !important;
-        animation: none !important;
-    }
-}
-
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; animation:none!important; } }
 </style>
 </head>
 <body>
@@ -340,10 +94,12 @@ dialog::backdrop {
     <a href="https://www.facebook.com/chosancut0610/" target="_blank" rel="noopener">Facebook</a>
     <a href="https://www.instagram.com/ha_vuu0610/" target="_blank" rel="noopener">Instagram</a>
   </p>
-  <p id="stat">Đang tải danh sách thẻ…</p>
+  <p id="stat" aria-live="polite">
+    Đang tải danh sách thẻ…
+</p>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="bar">
-    <input type="search" id="q" placeholder="Tìm theo tên thẻ" aria-label="Tìm theo tên thẻ">
+     <div class="search-box">     <svg class="search-icon"          width="20" height="20"          viewBox="0 0 24 24"          fill="none"          stroke="currentColor"          stroke-width="1.8"          stroke-linecap="round"          aria-hidden="true">         <circle cx="11" cy="11" r="7"/>         <path d="m16 16 4 4"/>     </svg>      <input         type="search"         id="q"         placeholder="Tìm cầu thủ, hãng, Auto..."         aria-label="Tìm kiếm card"         autocomplete="off"     >      <button         type="button"         id="clearSearch"         aria-label="Xóa tìm kiếm"         title="Xóa tìm kiếm"         hidden     >×</button> </div>
     <button type="button" class="chip" data-s="sale" title="Còn hàng" aria-pressed="false">FOR SALE</button>
     <button type="button" class="chip" data-s="nfs" title="Not For Sale" aria-pressed="false">NFS</button>
     <button type="button" class="chip" data-s="sold" title="Đã bán" aria-pressed="false">SOLD</button>
@@ -356,10 +112,11 @@ dialog::backdrop {
   </div>
   <div class="grid" id="grid"></div>
 </main>
-<dialog id="lb"><div id="lbc"></div></dialog>
+<dialog id="lb" aria-label="Chi tiết card"><div id="lbc"></div></dialog>
 <script>
 const $=s=>document.querySelector(s);
 let cards=[];
+let loadError=false, loaded=false;
 const fmt=(n,c)=>{c=c||'VND';try{return new Intl.NumberFormat(c==='USD'?'en-US':'vi-VN',{style:'currency',currency:c,maximumFractionDigits:c==='USD'?2:0}).format(n)}catch(e){return n+' '+c}};
 
 const pn=c=>{const v=c.price;return typeof v==='number'?v:(/^\d+(\.\d+)?$/.test(String(v).trim())?+v:NaN)};
@@ -378,16 +135,50 @@ function drawTabs(){
   const mk=(key,label,tip)=>{if(key!=='all')labels[key]=label;const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(tab===key));b.textContent=label;if(tip)b.title=tip;b.onclick=()=>{tab=key;render()};box.append(b)};
   mk('all','ALL');m.forEach((label,key)=>mk(key,label));
 }
+  
+const normalizeSearch = value =>
+    String(value ?? '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .trim();
+
+function matchesSearch(card, query) {
+    const keywords = normalizeSearch(query)
+        .split(/\s+/)
+        .filter(Boolean);
+
+    const searchable = normalizeSearch([
+        card.name,
+        card.brand,
+        card.season,
+        card.info,
+        card.sport,
+        sp(card),
+        sp(card).toLowerCase() === 'football' ? 'bóng đá soccer' : '',
+        sp(card).toLowerCase() === 'f1' ? 'Formula 1' : '',
+        SL[st(card)],
+        card.price
+    ].filter(v => v != null).join(' '));
+
+    return keywords.every(
+        keyword => searchable.includes(keyword)
+    );
+}
+
 function render(){
   drawTabs();
   document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(status===b.dataset.s)));
-  const q=$('#q').value.trim().toLowerCase(),s=$('#sort').value;
+  const q=$('#q').value.trim(),s=$('#sort').value;
+  $('#clearSearch').hidden = !$('#q').value;
+  if(!loaded){ $('#stat').textContent=loadError?'Không đọc được file cards.json.':'Đang tải danh sách thẻ…'; return; }
   const base=cards.map((c,i)=>({...c,i})).filter(c=>(tab==='all'||sp(c).toLowerCase()===tab)&&(!status||st(c)===status));
-  const list=base.filter(c=>[c.name,c.brand,c.season,c.info].join(' ').toLowerCase().includes(q));
+  const list = base.filter(c => matchesSearch(c, q));
   const by={orig:(a,b)=>a.i-b.i,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]);
   const lab=[tab==='all'?'':labels[tab],SL[status]].filter(Boolean).map(x=>' '+x).join('');
-  $('#stat').textContent=base.length?base.length+' thẻ'+lab+'.':'Chưa có thẻ'+lab+' nào.';
+  $('#stat').textContent = `Hiển thị ${list.length}/${base.length} thẻ${lab}` + (q ? ` · "${q}"` : '');
   const g=$('#grid');g.textContent='';
   if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(status?'Chưa có thẻ nào ở mục này.':tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
   for(const c of list){
@@ -396,10 +187,10 @@ function render(){
     const b=document.createElement('button');b.className='pic';b.type='button';b.setAttribute('aria-label','Xem lớn: '+(c.name||'thẻ'));
     const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt=c.name||'Thẻ bóng đá';
     const p=document.createElement('span');p.className='price'+(isNaN(pn(c))?' tx':'');p.textContent=plabel(c);
-    b.append(im,p);
+    b.append(im);
     b.onclick=()=>openLb(c);
     const n=document.createElement('div');n.className='name';n.textContent=c.name||'(chưa đặt tên)';
-    d.append(b,n);g.append(d);
+    d.append(b,p,n);g.append(d);
   }
 }
 function openLb(c){
@@ -426,11 +217,21 @@ function openLb(c){
   $('#lb').showModal();
 }
 $('#lb').onclick=e=>{if(e.target===$('#lb')||e.target.id==='lbx')$('#lb').close()};
-$('#q').oninput=render;$('#sort').onchange=render;
+$('#q').oninput=render;
+$('#sort').onchange=render;
+function clearSearch(){
+  $('#q').value='';
+  render();
+  $('#q').focus();
+}
+$('#clearSearch').addEventListener('click',clearSearch);
+$('#q').addEventListener('keydown',e=>{
+  if(e.key==='Escape' && $('#q').value){e.preventDefault();clearSearch();}
+});
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{status=status===b.dataset.s?'':b.dataset.s;render()});
-fetch('cards.json?v='+Date.now()).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
-  .then(d=>{cards=Array.isArray(d)?d:[];render()})
-  .catch(()=>{$('#stat').textContent='Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.'});
+fetch('cards.json', {cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
+  .then(d=>{if(!Array.isArray(d))throw new Error('Invalid cards.json');cards=d;loaded=true;render()})
+  .catch(()=>{loadError=true;$('#stat').textContent='Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.'});
 </script>
   <script data-goatcounter="https://vuhoanghauit.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
