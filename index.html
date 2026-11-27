@@ -364,7 +364,7 @@ html[lang=vi] .image-unavailable::after{content:'Không có ảnh'}
 <a href="https://www.facebook.com/chosancut0610/" rel="noopener noreferrer" target="_blank">Contact</a>
 </nav>
 <p class="footer-small">© HVCARDS · Independent personal sports card collection. Not affiliated with any club or card manufacturer.</p>
-</footer>
+<p style="color:var(--muted);font-size:12px;margin:8px 0 0">Usage statistics via GoatCounter. <a href="https://www.goatcounter.com/help/privacy" target="_blank" rel="noopener noreferrer" style="color:inherit">Privacy</a></p></footer>
 </main>
 <button aria-label="Về đầu trang" data-i18n="↑ Back to Top" data-i18n-aria-label="Về đầu trang" hidden="" id="backTop" type="button">↑ Back to Top</button>
 <dialog aria-label="Chi tiết card" data-i18n-aria-label="Chi tiết card" id="lb"><div id="lbc"></div></dialog>
@@ -376,7 +376,7 @@ let language="vi";try{if(localStorage.getItem("hvcards-language")==="en")languag
 const t=key=>translations[key]?.[language==="en"?0:1]??key;
 const statusLabel=state=>t(SL[state]||"STATUS UNKNOWN");
 function translateStatic(){document.documentElement.lang=language;document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));for(const attr of ["placeholder","aria-label","title"]){document.querySelectorAll("[data-i18n-"+attr+"]").forEach(el=>el.setAttribute(attr,t(el.getAttribute("data-i18n-"+attr))));}document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===language)));}
-function changeLanguage(next){if(next===language)return;language=next;try{localStorage.setItem("hvcards-language",language)}catch{}translateStatic();pocketCache.clear();lastGridKey="";drawTabs();if(loaded){translateFilterOptions();renderShowcase();}render();}
+function changeLanguage(next){if(next===language)return;language=next;hvTrack('language',null,next);try{localStorage.setItem("hvcards-language",language)}catch{}translateStatic();pocketCache.clear();lastGridKey="";drawTabs();if(loaded){translateFilterOptions();renderShowcase();}render();}
 
 let loadError=false, loaded=false;
 const fmt=(n,c)=>{c=c||'VND';try{return new Intl.NumberFormat(c==='USD'?'en-US':'vi-VN',{style:'currency',currency:c,maximumFractionDigits:c==='USD'?2:0}).format(n)}catch(e){return n+' '+c}};
@@ -578,7 +578,29 @@ function render(){
   if(!list.length){g.replaceChildren(element('div','empty',t('Không có thẻ nào khớp với bộ lọc.')));return;}
   g.replaceChildren(...list.map(c=>{const id=cardKey(c);if(!pocketCache.has(id))pocketCache.set(id,makePocket(c));return pocketCache.get(id);}));
 }
+// HVCARDS private analytics — public event sender only, no API credentials.
+const hvEventQueue=[];
+let hvEventTimer=null;
+function hvFlushEvents(){
+  if(typeof window.goatcounter?.count!=='function')return false;
+  while(hvEventQueue.length){const e=hvEventQueue.shift();try{window.goatcounter.count(e)}catch{}}
+  return true;
+}
+function hvTrack(kind,card=null,value=''){
+  try{
+    if(location.hostname!=='hvuh12.github.io')return;
+    const id=card?encodeURIComponent(cardKey(card)):encodeURIComponent(value);
+    const title=card?String(card.name||cardKey(card)):value;
+    const event={path:'hv-'+kind+'/'+id,title:kind+' | '+title,event:true,no_session:kind!=='card-view'};
+    if(hvEventQueue.length<50)hvEventQueue.push(event);
+    if(hvFlushEvents())return;
+    if(hvEventTimer===null){let tries=0;hvEventTimer=setInterval(()=>{if(hvFlushEvents()||++tries>=40){clearInterval(hvEventTimer);hvEventTimer=null;hvEventQueue.length=0;}},250);}
+  }catch{}
+}
+let hvLastCard=null;
+
 function openLb(c){
+  const id=cardKey(c); if(hvLastCard!==id||!$('#lb').open){hvTrack('card-view',c);hvLastCard=id;}
   const box=$('#lbc'); box.replaceChildren();
   const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
   const header=make('div','detail-header');
@@ -621,7 +643,7 @@ function openLb(c){
   });
   if(specs.children.length)info.append(specs);
   const actions=make('div','detail-actions');
-  function contact(label,url,primary){const a=make('a','detail-action'+(primary?' primary':''),label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a)}
+  function contact(label,url,primary){const a=make('a','detail-action'+(primary?' primary':''),label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.addEventListener('click',()=>hvTrack('contact',c));actions.append(a)}
   if(state!=='sold'){
     contact(state==='sale'?t('Contact to Buy / Trade'):t('Contact Collector'),'https://www.facebook.com/chosancut0610/',true);
   }
@@ -634,13 +656,13 @@ function openLb(c){
     try{if(document.execCommand('copy')){fallback.hidden=true;return true}}catch{}
     copyStatus.textContent=t("Không sao chép tự động được. Hãy nhấn Ctrl+C hoặc dùng chức năng Copy trên điện thoại.");return false;
   }
-  function copyButton(label,getText){
+  function copyButton(label,getText,eventKind){
     const button=make('button','detail-action',label);button.type='button';
-    button.onclick=async()=>{const ok=await copyText(getText());copyStatus.textContent=ok?t("Copied!"):copyStatus.textContent;if(ok){button.textContent=t("Copied!");setTimeout(()=>{button.textContent=label},1600)}};
+    button.onclick=async()=>{const ok=await copyText(getText());copyStatus.textContent=ok?t("Copied!"):copyStatus.textContent;if(ok){hvTrack(eventKind,c);button.textContent=t("Copied!");setTimeout(()=>{button.textContent=label},1600)}};
     actions.append(button);
   }
-  if(String(c.name??'').trim())copyButton(t('Copy card name'),()=>String(c.name).trim());
-  copyButton(t('Share card'),()=>cardUrl(c));
+  if(String(c.name??'').trim())copyButton(t('Copy card name'),()=>String(c.name).trim(),'copy-name');
+  copyButton(t('Share card'),()=>cardUrl(c),'share');
   info.append(actions,copyStatus,fallback);
   const hasActual=photos.some(p=>p.label.startsWith('Actual'));
   info.append(make('p','detail-note',t("Ảnh gallery có thể được tăng nét hoặc cân bằng ánh sáng để trưng bày. ")+(hasActual?t("Vui lòng xem ảnh Actual để tham khảo tình trạng thực tế."):t("Ảnh chụp thực tế có thể được cung cấp khi liên hệ."))+t(" Không dùng ảnh đã xử lý để xác định tình trạng card.")));
@@ -657,7 +679,7 @@ function openLb(c){
   $('#lb').setAttribute('aria-labelledby','detail-title');if(!$('#lb').open)$('#lb').showModal();box.scrollTop=0;updateCardUrl(c);
 }
 $('#lb').onclick=e=>{if(e.target===$('#lb')||e.target.id==='lbx')$('#lb').close()};
-$('#lb').addEventListener('close',()=>updateCardUrl(null));
+$('#lb').addEventListener('close',()=>{hvLastCard=null;updateCardUrl(null)});
 $('#q').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,100);};
 $('#sort').onchange=render;
 function clearSearch(){
@@ -684,6 +706,6 @@ fetch('cards.json', {cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.stat
   .catch(()=>{loadError=true;$('#stat').textContent=t("Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.")});
 </script>
   <script data-goatcounter="https://vuhoanghauit.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+        data-goatcounter-settings='{"path":"/Sport_cards/"}' async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
