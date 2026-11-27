@@ -115,6 +115,13 @@ dialog::backdrop { background:#000d; backdrop-filter:blur(6px); }
 .detail-note { border-top:1px solid var(--edge); padding-top:12px; line-height:1.5; }
 @media(max-width:650px) { #lbc { padding:14px; } .detail-layout { grid-template-columns:minmax(0,1fr); gap:18px; } .detail-stage { height:clamp(220px,48dvh,420px); } .detail-header { margin-bottom:12px; } }
 
+/* V1.3.1: Best Offer and sharing */
+.price-wrap { display:flex; flex-direction:column; align-items:flex-end; gap:4px; min-width:0; }
+.offer-label { font-size:12px; color:var(--muted); line-height:1.2; }
+.detail-price .offer-label { display:block; margin-top:5px; font:500 14px/1.3 var(--body); color:var(--muted); }
+.detail-copy-status { font-size:13px; color:var(--muted); overflow-wrap:anywhere; }
+.detail-copy-status:empty { display:none; }
+.detail-share-fallback { width:100%; min-height:90px; margin-top:8px; color:var(--text); background:var(--bg); border:1px solid var(--edge); border-radius:6px; padding:8px; font:inherit; }
 </style>
 </head>
 <body>
@@ -159,6 +166,36 @@ const st=c=>{const t=String(c.price??'').trim().toLowerCase();return /^sold/.tes
 const SL={sale:'FOR SALE',nfs:'NFS',sold:'SOLD'};
 const sp=c=>{const x=(c.sport||'').trim();return ALIAS[x.toLowerCase()]||x};
 let tab='all',status='',labels={};
+const BEST_OFFER = 'or Best Offer';
+// An explicit id is preferred. Existing cards get an ID derived from their image path.
+// It is independent of price, status, and list order.
+function cardKey(c){
+  const id=String(c.id??'').trim();
+  if(id)return id;
+  const source=String(c.img||c.back||c.actual||[c.name,c.brand,c.season,c.serial,c.info].join('|')).trim();
+  // Encode the entire key rather than relying on a short hash that can collide.
+  const bytes=new TextEncoder().encode(source);
+  const encoded=btoa(Array.from(bytes,b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  return 'auto-'+encoded;
+}
+function cardUrl(c){
+  const url=new URL(location.href);
+  url.search='';url.hash='';
+  url.searchParams.set('card',cardKey(c));
+  return url.href;
+}
+function updateCardUrl(c){
+  const url=new URL(location.href);
+  if(c)url.searchParams.set('card',cardKey(c));else url.searchParams.delete('card');
+  try{history.replaceState(history.state,'',url);}catch{}
+}
+function openLinkedCard(){
+  const key=new URL(location.href).searchParams.get('card');
+  if(!key)return;
+  const matches=cards.filter(c=>cardKey(c)===key);
+  if(matches.length===1)openLb(matches[0]);
+  else {$('#stat').textContent=matches.length?'Link card chưa xác định duy nhất. Vui lòng tìm card trong bộ sưu tập.':'Card này không còn trong bộ sưu tập hoặc đường dẫn không còn hợp lệ.';updateCardUrl(null);}
+}
 function drawTabs(){
   const m=new Map();ALWAYS.forEach(x=>m.set(x.toLowerCase(),x));
   cards.forEach(c=>{const x=sp(c);if(x&&!m.has(x.toLowerCase()))m.set(x.toLowerCase(),x)});
@@ -221,7 +258,9 @@ function render(){
     b.append(im);
     b.onclick=()=>openLb(c);
     const n=document.createElement('div');n.className='name';n.textContent=c.name||'(chưa đặt tên)';
-    d.append(b,p,n);g.append(d);
+    const priceWrap=document.createElement('div');priceWrap.className='price-wrap';priceWrap.append(p);
+    if(st(c)==='sale'){const offer=document.createElement('span');offer.className='offer-label';offer.textContent=BEST_OFFER;priceWrap.append(offer)}
+    d.append(b,priceWrap,n);g.append(d);
   }
 }
 function openLb(c){
@@ -256,7 +295,10 @@ function openLb(c){
   info.append(make('div','detail-kicker',sp(c)||'Sports card'));
   const title=make('h2','',c.name||'Untitled card');title.id='detail-title';info.append(title);
   info.append(make('span','detail-status '+state,SL[state]||'STATUS UNKNOWN'));
-  if(state==='sale')info.append(make('div','detail-price',plabel(c)));
+  if(state==='sale'){
+    const price=make('div','detail-price',plabel(c));
+    price.append(make('span','offer-label',BEST_OFFER));info.append(price);
+  }
   const specs=make('dl','detail-specs');
   [['Hãng',c.brand],['Mùa thẻ',c.season],['Bộ thẻ',c.set],['Serial',c.serial],['Loại card',Array.isArray(c.type)?c.type.join(', '):c.type],['Grade',c.grade],['Thông tin',c.info]].forEach(([label,value])=>{
     if(value==null||String(value).trim()==='')return;
@@ -269,16 +311,35 @@ function openLb(c){
     contact(state==='sale'?'Contact to Buy / Trade':'Contact Collector','https://www.facebook.com/chosancut0610/',true);
     contact('Instagram','https://www.instagram.com/ha_vuu0610/',false);
   }
-  const copy=make('button','detail-action','Copy card details');copy.type='button';copy.onclick=async()=>{
-    const text=[c.name,c.brand,c.season,c.info,plabel(c),location.href.split('#')[0]].filter(Boolean).join('\n');
-    try{await navigator.clipboard.writeText(text);copy.textContent='Copied!'}catch{copy.textContent='Không sao chép được';}
-  };actions.append(copy);info.append(actions);
+  const copyStatus=make('p','detail-copy-status');copyStatus.setAttribute('role','status');
+  const fallback=make('textarea','detail-share-fallback');fallback.readOnly=true;fallback.hidden=true;fallback.setAttribute('aria-label','Nội dung để sao chép thủ công');
+  async function copyText(text){
+    fallback.hidden=true;copyStatus.textContent='';
+    try{await navigator.clipboard.writeText(text);return true}catch{}
+    fallback.value=text;fallback.hidden=false;fallback.focus();fallback.select();
+    try{if(document.execCommand('copy')){fallback.hidden=true;return true}}catch{}
+    copyStatus.textContent='Không sao chép tự động được. Hãy nhấn Ctrl+C hoặc dùng chức năng Copy trên điện thoại.';return false;
+  }
+  function copyButton(label,getText){
+    const button=make('button','detail-action',label);button.type='button';
+    button.onclick=async()=>{const ok=await copyText(getText());copyStatus.textContent=ok?'Copied!':copyStatus.textContent;if(ok){button.textContent='Copied!';setTimeout(()=>{button.textContent=label},1600)}};
+    actions.append(button);
+  }
+  copyButton('Copy card details',()=>{
+    const type=Array.isArray(c.type)?c.type.join(', '):c.type;
+    const fields=[c.name,c.brand,c.season,c.set,c.serial,type,c.grade,c.info].map(v=>String(v??'').trim()).filter(Boolean);
+    const priceLine=state==='sale'?'Price: '+plabel(c)+' '+BEST_OFFER:state?SL[state]:'';
+    return [...new Set(fields),priceLine,'','HVCARDS',cardUrl(c)].filter((v,i,a)=>v||i===a.length-3).join('\n');
+  });
+  copyButton('Share card',()=>cardUrl(c));
+  info.append(actions,copyStatus,fallback);
   const hasActual=photos.some(p=>p.label.startsWith('Actual'));
   info.append(make('p','detail-note','Ảnh gallery có thể được tăng nét hoặc cân bằng ánh sáng để trưng bày. '+(hasActual?'Vui lòng xem ảnh Actual để tham khảo tình trạng thực tế.':'Ảnh chụp thực tế có thể được cung cấp khi liên hệ.')+' Không dùng ảnh đã xử lý để xác định tình trạng card.'));
   layout.append(media,info);box.append(header,layout);
-  $('#lb').setAttribute('aria-labelledby','detail-title');$('#lb').showModal();box.scrollTop=0;
+  $('#lb').setAttribute('aria-labelledby','detail-title');if(!$('#lb').open)$('#lb').showModal();box.scrollTop=0;updateCardUrl(c);
 }
 $('#lb').onclick=e=>{if(e.target===$('#lb')||e.target.id==='lbx')$('#lb').close()};
+$('#lb').addEventListener('close',()=>updateCardUrl(null));
 $('#q').oninput=render;
 $('#sort').onchange=render;
 function clearSearch(){
@@ -292,7 +353,7 @@ $('#q').addEventListener('keydown',e=>{
 });
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{status=status===b.dataset.s?'':b.dataset.s;render()});
 fetch('cards.json', {cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
-  .then(d=>{if(!Array.isArray(d))throw new Error('Invalid cards.json');cards=d;loaded=true;render()})
+  .then(d=>{if(!Array.isArray(d))throw new Error('Invalid cards.json');cards=d;loaded=true;render();openLinkedCard()})
   .catch(()=>{loadError=true;$('#stat').textContent='Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.'});
 </script>
   <script data-goatcounter="https://vuhoanghauit.goatcounter.com/count"
