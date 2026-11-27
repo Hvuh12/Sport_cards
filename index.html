@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sport Card Collection</title>
+<title>HVCARDS | Personal Sports Card Collection</title>
+<meta name="theme-color" content="#0B0B0D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
@@ -50,11 +51,291 @@ dialog::backdrop{background:rgba(5,8,14,.8)}
 .lbprice{display:inline-block;background:var(--tag);color:var(--tag-t);font:700 22px/1 var(--disp);padding:6px 10px 5px;border-radius:3px}
 .lbprice.tx{background:var(--text);color:var(--bg);letter-spacing:.04em}
 @media(max-width:560px){.lbimgs img{width:min(76vw,320px)}}
+  
+/* ===== HVCARDS DARK PREMIUM THEME ===== */
+
+:root {
+    color-scheme: dark;
+    --bg: #0B0B0D;
+    --pocket: #161618;
+    --edge: #2A2A2E;
+    --text: #F5F5F5;
+    --muted: #929292;
+    --tag: #D4B67C;
+    --tag-t: #0B0B0D;
+    --field: #141416;
+}
+
+/* Page layout */
+
+body {
+    background: var(--bg);
+}
+
+main {
+    max-width: 1280px;
+    padding: 40px 24px 64px;
+}
+
+/* Brand */
+
+.brand {
+    color: var(--tag);
+    font-size: clamp(48px, 8vw, 76px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 4px;
+}
+
+.brand span {
+    color: var(--text);
+}
+
+.brand-subtitle {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    font-weight: 500;
+    margin: 0 0 24px;
+}
+
+/* Social links */
+
+.contact {
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.contact a {
+    border-radius: 6px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+}
+
+.contact a:hover {
+    color: var(--tag);
+    border-color: var(--tag);
+    background: #201D17;
+}
+
+/* Search and filters */
+
+.bar {
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+input, select, .chip {
+    min-height: 42px;
+    border-radius: 6px;
+    transition: border-color 0.2s ease,
+                background 0.2s ease;
+}
+
+input:hover,
+select:hover,
+.chip:hover {
+    border-color: #71634C;
+}
+
+input::placeholder {
+    color: var(--muted);
+}
+
+.chip[aria-pressed="true"] {
+    background: var(--tag);
+    color: var(--tag-t);
+    border-color: var(--tag);
+}
+
+/* Sport tabs */
+
+.tabs {
+    margin-bottom: 24px;
+}
+
+.tabs button {
+    padding: 12px 18px;
+    transition: color 0.2s ease;
+}
+
+.tabs button:hover {
+    color: var(--text);
+}
+
+.tabs button[aria-selected="true"] {
+    color: var(--tag);
+    border-bottom-color: var(--tag);
+}
+
+/* Card gallery */
+
+.grid {
+    grid-template-columns:
+        repeat(auto-fill, minmax(175px, 1fr));
+    gap: 20px;
+}
+
+.pocket {
+    background: var(--pocket);
+    border: 1px solid var(--edge);
+    border-radius: 10px;
+    padding: 10px;
+    gap: 12px;
+    transition: transform 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+@media (hover: hover) {
+    .pocket:hover {
+        transform: translateY(-5px);
+        border-color: #8A754F;
+        box-shadow: 0 12px 28px rgba(0,0,0,.35);
+    }
+}
+
+.pic {
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.pic img {
+    background: #000;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.name {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 500;
+    padding: 0 3px 4px;
+}
+
+/* Price and status labels */
+
+.price {
+    right: 7px;
+    bottom: 7px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 18px;
+    transform: none;
+    background: var(--tag);
+    color: var(--tag-t);
+}
+
+.price.tx {
+    background: #252830;
+    color: #D1D5DB;
+}
+
+.pocket.sold .price {
+    background: #29292D;
+    color: #AAAAAA;
+}
+
+.pocket.sold .pic img {
+    opacity: .45;
+    filter: grayscale(1);
+}
+
+/* Card detail popup */
+
+dialog::backdrop {
+    background: rgba(0,0,0,.85);
+    backdrop-filter: blur(6px);
+}
+
+#lbc {
+    background: #141416;
+    border: 1px solid #343438;
+    border-radius: 14px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6);
+}
+
+#lbx:hover {
+    color: var(--tag);
+}
+
+.lbprice {
+    border-radius: 5px;
+}
+
+.lbprice.tx {
+    background: #252830;
+    color: #D1D5DB;
+}
+
+/* Mobile responsive */
+
+@media (max-width: 600px) {
+    main {
+        padding: 28px 12px 40px;
+    }
+
+    .brand {
+        font-size: 52px;
+    }
+
+    .brand-subtitle {
+        font-size: 9px;
+        letter-spacing: 0.18em;
+    }
+
+    .grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .pocket {
+        min-width: 0;
+        padding: 6px;
+        gap: 8px;
+    }
+
+    .name {
+        font-size: 13px;
+    }
+
+    .price {
+        font-size: 16px;
+        right: 5px;
+        bottom: 5px;
+    }
+
+    .bar input {
+        flex-basis: 100%;
+        min-width: 0;
+    }
+
+    .bar select {
+        width: 100%;
+    }
+
+    .chip {
+        flex: 1;
+        padding: 0 8px;
+        font-size: 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
 </style>
 </head>
 <body>
 <main>
-  <h1>Sport Card Collection</h1>
+  <h1 class="brand">HV<span>CARDS</span></h1>
+<p class="brand-subtitle">PERSONAL SPORTS CARD COLLECTION</p>
   <p class="contact">AE muốn mua hoặc offer trao đổi thì nhắn mình qua
     <a href="https://www.facebook.com/chosancut0610/" target="_blank" rel="noopener">Facebook</a>
     <a href="https://www.instagram.com/ha_vuu0610/" target="_blank" rel="noopener">Instagram</a>
