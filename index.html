@@ -276,93 +276,108 @@ body:has(#lb[open]) { overflow:hidden; }
 .related-state { color:var(--muted); font-size:11px; }
 @media(max-width:700px) { .advanced-grid {grid-template-columns:repeat(2,minmax(0,1fr));} .related-grid {grid-template-columns:repeat(2,minmax(0,1fr));} }
 @media(prefers-reduced-motion:reduce) { .loading-image {animation:none;} }
+
+/* V1.7 — language switch */
+.language-switch{display:inline-flex;gap:2px;align-items:center;padding:3px;border:1px solid var(--edge);border-radius:8px;background:var(--field);flex:none}
+.language-switch button{font:700 13px/1 var(--body);min-width:38px;min-height:35px;padding:8px;border:0;border-radius:5px;color:var(--muted);background:transparent;cursor:pointer}
+.language-switch button[aria-pressed=true]{background:var(--tag);color:var(--tag-t)}
+.language-switch button:hover:not([aria-pressed=true]){color:var(--text)}
+html[lang=vi] .image-unavailable::after{content:'Không có ảnh'}
+@media(max-width:650px){.brand-header .contact{width:100%}.language-switch{margin-left:auto}}
 </style>
 </head>
 <body>
 <main>
-  <header class="brand-header" id="top">
-    <div class="brand-lockup">
-      <img class="brand-emblem" src="assets/hvcards-emblem.webp" width="300" height="300" alt="" decoding="async">
-      <div><h1 class="brand">HV<span>CARDS</span></h1>
-      <p class="brand-subtitle">PERSONAL SPORTS CARD COLLECTION</p></div>
-    </div>
-    <p class="contact"><span class="contact-caption">Liên hệ mua bán / trao đổi card</span>
-      <a href="https://www.facebook.com/chosancut0610/" target="_blank" rel="noopener noreferrer">Facebook</a>
-      <a href="https://www.instagram.com/ha_vuu0610/" target="_blank" rel="noopener noreferrer">Instagram</a>
-    </p>
-  </header>
-  <section class="overview" aria-label="Collection Overview">
-    <div class="overview-item"><strong class="overview-value" id="totalCards">—</strong><span class="overview-label">TOTAL CARDS</span></div>
-    <div class="overview-item"><strong class="overview-value" id="saleCards">—</strong><span class="overview-label">FOR SALE</span></div>
-    <div class="overview-item"><strong class="overview-value" id="pcCards">—</strong><span class="overview-label">PERSONAL COLLECTION</span></div>
-  </section>
-  <section class="showcase" id="highlights" aria-labelledby="highlightHeading" hidden>
-    <div class="section-heading">
-      <span class="showcase-kicker">HVCARDS / SHOWCASE</span>
-      <h2 id="highlightHeading">Collection Highlights</h2>
-      <p>One legend. One rising star.</p>
-    </div>
-    <div class="highlight-grid" id="highlightGrid"></div>
-    <a class="explore-cta" href="#explore">Explore Collection ↓</a>
-  </section>
-  <section class="recent-section" id="recent" aria-labelledby="recentHeading" hidden>
-    <div class="section-heading"><h2 id="recentHeading">Recently Added</h2><p>The latest additions to my collection.</p></div>
-    <div class="recent-grid" id="recentGrid"></div>
-  </section>
-  <section id="explore" aria-labelledby="exploreHeading">
-    <div class="section-heading"><h2 id="exploreHeading">Explore Collection</h2><p>Discover the full HVCARDS collection.</p></div>
-  <div class="tabs" id="tabs" role="tablist"></div>
-  <div class="bar">
-     <div class="search-box">     <svg class="search-icon"          width="20" height="20"          viewBox="0 0 24 24"          fill="none"          stroke="currentColor"          stroke-width="1.8"          stroke-linecap="round"          aria-hidden="true">         <circle cx="11" cy="11" r="7"/>         <path d="m16 16 4 4"/>     </svg>      <input         type="search"         id="q"         placeholder="Tìm cầu thủ, hãng, Auto..."         aria-label="Tìm kiếm card"         autocomplete="off"     >      <button         type="button"         id="clearSearch"         aria-label="Xóa tìm kiếm"         title="Xóa tìm kiếm"         hidden     >×</button> </div>
-    <button type="button" class="chip" data-s="sale" title="Còn hàng" aria-pressed="false">FOR SALE</button>
-    <button type="button" class="chip" data-s="nfs" title="Not For Sale" aria-pressed="false">NFS</button>
-    <button type="button" class="chip" data-s="sold" title="Đã bán" aria-pressed="false">SOLD</button>
-    <select id="sort" aria-label="Sắp xếp">
-      <option value="orig">Thứ tự trong danh sách</option>
-      <option value="recent">Recently Added</option>
-      <option value="asc">Giá thấp đến cao</option>
-      <option value="desc">Giá cao đến thấp</option>
-      <option value="name">Tên A đến Z</option>
-    </select>
-  </div>
-  <details class="advanced" id="advancedFilters">
-    <summary>Advanced Filters <span id="filterCount"></span></summary>
-    <div class="advanced-grid">
-      <label>Manufacturer<select id="brandFilter"><option value="">All brands</option></select></label>
-      <label>Team / National Team<select id="teamFilter"><option value="">All teams</option></select></label>
-      <label>Card Type<select id="typeFilter"><option value="">All types</option></select></label>
-      <label>Season<select id="seasonFilter"><option value="">All seasons</option></select></label>
-      <div class="price-range">
-        <label>Min price (VND)<input id="minPrice" type="number" min="0" step="any" placeholder="0" inputmode="numeric"></label>
-        <label>Max price (VND)<input id="maxPrice" type="number" min="0" step="any" placeholder="No limit" inputmode="numeric"></label>
-      </div>
-    </div>
-    <p class="filter-note" id="priceNote">Price range applies only to FOR SALE cards priced in VND.</p>
-  </details>
-  <button type="button" class="reset-filters" id="archiveToggle" aria-pressed="false">View Sold Archive</button>
-  <div class="result-bar">
-    <p id="stat" aria-live="polite">Đang tải danh sách thẻ…</p>
-    <button type="button" id="resetFilters" class="reset-filters" hidden>Reset Filters</button>
-  </div>
-  <div class="grid" id="grid"></div>
-  </section>
-  <footer class="site-footer">
-    <div class="footer-brand">
-      <img src="assets/hvcards-logo.webp" width="740" height="808" loading="lazy" decoding="async" alt="HVCARDS logo">
-      <div><div class="footer-name">HVCARDS</div><p class="footer-tagline">Collect. Trade. Connect.</p></div>
-    </div>
-    <nav class="footer-links" aria-label="Footer navigation">
-      <a href="#top">Home</a><a href="#explore">Collection</a>
-      <a href="https://www.facebook.com/chosancut0610/" target="_blank" rel="noopener noreferrer">Contact</a>
-    </nav>
-    <p class="footer-small">© HVCARDS · Independent personal sports card collection. Not affiliated with any club or card manufacturer.</p>
-  </footer>
+<header class="brand-header" id="top">
+<div class="brand-lockup">
+<img alt="" class="brand-emblem" decoding="async" height="300" src="assets/hvcards-emblem.webp" width="300"/>
+<div><h1 class="brand">HV<span>CARDS</span></h1>
+<p class="brand-subtitle" data-i18n="PERSONAL SPORTS CARD COLLECTION">PERSONAL SPORTS CARD COLLECTION</p></div>
+</div>
+<p class="contact"><span class="contact-caption" data-i18n="Liên hệ mua bán / trao đổi card">Liên hệ mua bán / trao đổi card</span>
+<a href="https://www.facebook.com/chosancut0610/" rel="noopener noreferrer" target="_blank">Facebook</a>
+<a href="https://www.instagram.com/ha_vuu0610/" rel="noopener noreferrer" target="_blank">Instagram</a>
+<span aria-label="Language / Ngôn ngữ" class="language-switch" role="group"><button aria-pressed="true" data-lang="vi" lang="vi" title="Tiếng Việt" type="button">VI</button><button aria-pressed="false" data-lang="en" lang="en" title="English" type="button">EN</button></span></p>
+</header>
+<section aria-label="Collection Overview" class="overview" data-i18n-aria-label="Collection Overview">
+<div class="overview-item"><strong class="overview-value" id="totalCards">—</strong><span class="overview-label" data-i18n="TOTAL CARDS">TOTAL CARDS</span></div>
+<div class="overview-item"><strong class="overview-value" id="saleCards">—</strong><span class="overview-label" data-i18n="FOR SALE">FOR SALE</span></div>
+<div class="overview-item"><strong class="overview-value" id="pcCards">—</strong><span class="overview-label" data-i18n="PERSONAL COLLECTION">PERSONAL COLLECTION</span></div>
+</section>
+<section aria-labelledby="highlightHeading" class="showcase" hidden="" id="highlights">
+<div class="section-heading">
+<span class="showcase-kicker">HVCARDS / SHOWCASE</span>
+<h2 data-i18n="Collection Highlights" id="highlightHeading">Collection Highlights</h2>
+<p data-i18n="One legend. One rising star.">One legend. One rising star.</p>
+</div>
+<div class="highlight-grid" id="highlightGrid"></div>
+<a class="explore-cta" data-i18n="Explore Collection ↓" href="#explore">Explore Collection ↓</a>
+</section>
+<section aria-labelledby="recentHeading" class="recent-section" hidden="" id="recent">
+<div class="section-heading"><h2 data-i18n="Recently Added" id="recentHeading">Recently Added</h2><p data-i18n="The latest additions to my collection.">The latest additions to my collection.</p></div>
+<div class="recent-grid" id="recentGrid"></div>
+</section>
+<section aria-labelledby="exploreHeading" id="explore">
+<div class="section-heading"><h2 data-i18n="Explore Collection" id="exploreHeading">Explore Collection</h2><p data-i18n="Discover the full HVCARDS collection.">Discover the full HVCARDS collection.</p></div>
+<div class="tabs" id="tabs" role="tablist"></div>
+<div class="bar">
+<div class="search-box"> <svg aria-hidden="true" class="search-icon" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24" width="20"> <circle cx="11" cy="11" r="7"></circle> <path d="m16 16 4 4"></path> </svg> <input aria-label="Tìm kiếm card" autocomplete="off" data-i18n-aria-label="Tìm kiếm card" data-i18n-placeholder="Tìm cầu thủ, hãng, Auto..." id="q" placeholder="Tìm cầu thủ, hãng, Auto..." type="search"/> <button aria-label="Xóa tìm kiếm" data-i18n-aria-label="Xóa tìm kiếm" data-i18n-title="Xóa tìm kiếm" hidden="" id="clearSearch" title="Xóa tìm kiếm" type="button">×</button> </div>
+<button aria-pressed="false" class="chip" data-i18n="FOR SALE" data-i18n-title="Còn hàng" data-s="sale" title="Còn hàng" type="button">FOR SALE</button>
+<button aria-pressed="false" class="chip" data-i18n="NFS" data-i18n-title="Not For Sale" data-s="nfs" title="Not For Sale" type="button">NFS</button>
+<button aria-pressed="false" class="chip" data-i18n="SOLD" data-i18n-title="Đã bán" data-s="sold" title="Đã bán" type="button">SOLD</button>
+<select aria-label="Sắp xếp" data-i18n-aria-label="Sắp xếp" id="sort">
+<option data-i18n="Thứ tự trong danh sách" value="orig">Thứ tự trong danh sách</option>
+<option data-i18n="Recently Added" value="recent">Recently Added</option>
+<option data-i18n="Giá thấp đến cao" value="asc">Giá thấp đến cao</option>
+<option data-i18n="Giá cao đến thấp" value="desc">Giá cao đến thấp</option>
+<option data-i18n="Tên A đến Z" value="name">Tên A đến Z</option>
+</select>
+</div>
+<details class="advanced" id="advancedFilters">
+<summary><span data-i18n="Advanced Filters">Advanced Filters</span> <span id="filterCount"></span></summary>
+<div class="advanced-grid">
+<label><span data-i18n="Manufacturer">Manufacturer</span><select id="brandFilter"><option data-i18n="All brands" value="">All brands</option></select></label>
+<label><span data-i18n="Team / National Team">Team / National Team</span><select id="teamFilter"><option data-i18n="All teams" value="">All teams</option></select></label>
+<label><span data-i18n="Card Type">Card Type</span><select id="typeFilter"><option data-i18n="All types" value="">All types</option></select></label>
+<label><span data-i18n="Season">Season</span><select id="seasonFilter"><option data-i18n="All seasons" value="">All seasons</option></select></label>
+<div class="price-range">
+<label><span data-i18n="Min price (VND)">Min price (VND)</span><input id="minPrice" inputmode="numeric" min="0" placeholder="0" step="any" type="number"/></label>
+<label><span data-i18n="Max price (VND)">Max price (VND)</span><input data-i18n-placeholder="No limit" id="maxPrice" inputmode="numeric" min="0" placeholder="No limit" step="any" type="number"/></label>
+</div>
+</div>
+<p class="filter-note" data-i18n="Price range applies only to FOR SALE cards priced in VND." id="priceNote">Price range applies only to FOR SALE cards priced in VND.</p>
+</details>
+<button aria-pressed="false" class="reset-filters" data-i18n="View Sold Archive" id="archiveToggle" type="button">View Sold Archive</button>
+<div class="result-bar">
+<p aria-live="polite" data-i18n="Đang tải danh sách thẻ…" id="stat">Đang tải danh sách thẻ…</p>
+<button class="reset-filters" data-i18n="Reset Filters" hidden="" id="resetFilters" type="button">Reset Filters</button>
+</div>
+<div class="grid" id="grid"></div>
+</section>
+<footer class="site-footer">
+<div class="footer-brand">
+<img alt="HVCARDS logo" decoding="async" height="808" loading="lazy" src="assets/hvcards-logo.webp" width="740"/>
+<div><div class="footer-name">HVCARDS</div><p class="footer-tagline" data-i18n="Collect. Trade. Connect.">Collect. Trade. Connect.</p></div>
+</div>
+<nav aria-label="Footer navigation" class="footer-links" data-i18n-aria-label="Footer navigation">
+<a data-i18n="Home" href="#top">Home</a><a data-i18n="Collection" href="#explore">Collection</a>
+<a data-i18n="Contact" href="https://www.facebook.com/chosancut0610/" rel="noopener noreferrer" target="_blank">Contact</a>
+</nav>
+<p class="footer-small" data-i18n="© HVCARDS · Independent personal sports card collection. Not affiliated with any club or card manufacturer.">© HVCARDS · Independent personal sports card collection. Not affiliated with any club or card manufacturer.</p>
+</footer>
 </main>
-<button type="button" id="backTop" hidden aria-label="Về đầu trang">↑ Back to Top</button>
-<dialog id="lb" aria-label="Chi tiết card"><div id="lbc"></div></dialog>
+<button aria-label="Về đầu trang" data-i18n="↑ Back to Top" data-i18n-aria-label="Về đầu trang" hidden="" id="backTop" type="button">↑ Back to Top</button>
+<dialog aria-label="Chi tiết card" data-i18n-aria-label="Chi tiết card" id="lb"><div id="lbc"></div></dialog>
 <script>
 const $=s=>document.querySelector(s);
 let cards=[];
+const translations={"PERSONAL SPORTS CARD COLLECTION":["PERSONAL SPORTS CARD COLLECTION","BỘ SƯU TẬP THẺ THỂ THAO CÁ NHÂN"],"Liên hệ mua bán / trao đổi card":["Contact for buying / trading cards","Liên hệ mua bán / trao đổi card"],"Collection Overview":["Collection Overview","Tổng quan bộ sưu tập"],"TOTAL CARDS":["TOTAL CARDS","TỔNG SỐ CARD"],"FOR SALE":["FOR SALE","ĐANG BÁN"],"PERSONAL COLLECTION":["PERSONAL COLLECTION","BỘ SƯU TẬP CÁ NHÂN"],"Collection Highlights":["Collection Highlights","Điểm nhấn bộ sưu tập"],"One legend. One rising star.":["One legend. One rising star.","Một huyền thoại. Một ngôi sao đang lên."],"Explore Collection ↓":["Explore Collection ↓","Khám phá bộ sưu tập ↓"],"Recently Added":["Recently Added","Mới cập nhật"],"The latest additions to my collection.":["The latest additions to my collection.","Những card mới nhất trong bộ sưu tập."],"Explore Collection":["Explore Collection","Khám phá bộ sưu tập"],"Discover the full HVCARDS collection.":["Discover the full HVCARDS collection.","Khám phá toàn bộ bộ sưu tập HVCARDS."],"Tìm cầu thủ, hãng, Auto...":["Search player, brand, autograph...","Tìm cầu thủ, hãng, Auto..."],"Tìm kiếm card":["Search cards","Tìm kiếm card"],"Xóa tìm kiếm":["Clear search","Xóa tìm kiếm"],"Còn hàng":["Available for sale","Đang bán"],"Not For Sale":["Not for sale","Không bán"],"Đã bán":["Sold","Đã bán"],"Sắp xếp":["Sort by","Sắp xếp"],"Thứ tự trong danh sách":["Default order","Thứ tự trong danh sách"],"Giá thấp đến cao":["Price: low to high","Giá thấp đến cao"],"Giá cao đến thấp":["Price: high to low","Giá cao đến thấp"],"Tên A đến Z":["Name: A to Z","Tên A đến Z"],"Advanced Filters":["Advanced Filters","Bộ lọc nâng cao"],"Manufacturer":["Manufacturer","Hãng sản xuất"],"Team / National Team":["Team / National Team","CLB / Đội tuyển"],"Card Type":["Card Type","Loại card"],"Season":["Season","Mùa thẻ"],"All brands":["All brands","Tất cả hãng"],"All teams":["All teams","Tất cả đội"],"All types":["All types","Tất cả loại"],"All seasons":["All seasons","Tất cả mùa"],"Min price (VND)":["Min price (VND)","Giá tối thiểu (VND)"],"Max price (VND)":["Max price (VND)","Giá tối đa (VND)"],"No limit":["No limit","Không giới hạn"],"Price range applies only to FOR SALE cards priced in VND.":["Price range applies only to FOR SALE cards priced in VND.","Khoảng giá chỉ áp dụng cho card đang bán bằng VND."],"View Sold Archive":["View Sold Archive","Xem kho card đã bán"],"Đang tải danh sách thẻ…":["Loading cards…","Đang tải danh sách thẻ…"],"Reset Filters":["Reset Filters","Đặt lại bộ lọc"],"Collect. Trade. Connect.":["Collect. Trade. Connect.","Sưu tầm. Trao đổi. Kết nối."],"Footer navigation":["Footer navigation","Điều hướng cuối trang"],"Home":["Home","Trang chủ"],"Collection":["Collection","Bộ sưu tập"],"Contact":["Contact","Liên hệ"],"© HVCARDS · Independent personal sports card collection. Not affiliated with any club or card manufacturer.":["© HVCARDS · Independent personal sports card collection. Not affiliated with any club or card manufacturer.","© HVCARDS · Bộ sưu tập thẻ thể thao cá nhân độc lập. Không liên kết với bất kỳ CLB hay hãng sản xuất card nào."],"Về đầu trang":["Back to top","Về đầu trang"],"↑ Back to Top":["↑ Back to Top","↑ Về đầu trang"],"Chi tiết card":["Card details","Chi tiết card"],"ALL":["ALL","TẤT CẢ"],"Football":["Football","Bóng đá"],"SOLD":["SOLD","ĐÃ BÁN"],"or Best Offer":["or Best Offer","or Best Offer · Có thể thương lượng"],"Not for sale":["Not for sale","Không bán"],"No longer available":["No longer available","Đã bán"],"Price unavailable":["Price unavailable","Chưa có giá"],"Link card chưa xác định duy nhất. Vui lòng tìm card trong bộ sưu tập.":["This card link is ambiguous. Please find the card in the collection.","Link card chưa xác định duy nhất. Vui lòng tìm card trong bộ sưu tập."],"Card này không còn trong bộ sưu tập hoặc đường dẫn không còn hợp lệ.":["This card is no longer in the collection or the link is invalid.","Card này không còn trong bộ sưu tập hoặc đường dẫn không còn hợp lệ."],"Sports card":["Sports card","Thẻ thể thao"],"Xem lớn: ":["Enlarge: ","Xem lớn: "],"thẻ":["card","thẻ"],"NEW":["NEW","MỚI"],"(chưa đặt tên)":["(Untitled card)","(chưa đặt tên)"],"Xem chi tiết ":["View details: ","Xem chi tiết "],"Collection Highlight":["Collection Highlight","Card nổi bật"],"The Legend":["The Legend","Huyền thoại"],"The Rising Star":["The Rising Star","Ngôi sao đang lên"],"The Rising Gem":["The Rising Gem","Viên ngọc đang lên"],"View card":["View card","Xem card"],"Back to Collection":["Back to Collection","Về bộ sưu tập"],"Sold Archive":["Sold Archive","Kho card đã bán"],"Min price must not exceed max price.":["Min price must not exceed max price.","Giá tối thiểu không được lớn hơn giá tối đa."],"Không đọc được file cards.json.":["Could not load cards.json.","Không đọc được file cards.json."],"Không có thẻ nào khớp với bộ lọc.":["No cards match your filters.","Không có thẻ nào khớp với bộ lọc."],"Đóng chi tiết card":["Close card details","Đóng chi tiết card"],"Front":["Front","Mặt trước"],"Back":["Back","Mặt sau"],"Actual front":["Actual front","Ảnh thật mặt trước"],"Actual back":["Actual back","Ảnh thật mặt sau"],"Mặt trước · Ảnh gallery":["Front · Gallery image","Mặt trước · Ảnh trưng bày"],"Mặt sau · Ảnh gallery":["Back · Gallery image","Mặt sau · Ảnh trưng bày"],"Mặt trước · Ảnh chụp thực tế":["Front · Actual photo","Mặt trước · Ảnh chụp thực tế"],"Mặt sau · Ảnh chụp thực tế":["Back · Actual photo","Mặt sau · Ảnh chụp thực tế"],"Không tải được ảnh.":["Image could not be loaded.","Không tải được ảnh."],"Chưa có ảnh card.":["No card image available.","Chưa có ảnh card."],"Untitled card":["Untitled card","Card chưa có tên"],"STATUS UNKNOWN":["STATUS UNKNOWN","CHƯA RÕ TRẠNG THÁI"],"Hãng":["Manufacturer","Hãng"],"Đội / CLB":["Team / Club","Đội / CLB"],"Mùa thẻ":["Season","Mùa thẻ"],"Bộ thẻ":["Set","Bộ thẻ"],"Serial":["Serial","Serial"],"Loại card":["Card type","Loại card"],"Grade":["Grade","Điểm grade"],"Thông tin":["Information","Thông tin"],"Contact to Buy / Trade":["Contact to Buy / Trade","Liên hệ mua / trao đổi"],"Contact Collector":["Contact Collector","Liên hệ collector"],"Nội dung để sao chép thủ công":["Text to copy manually","Nội dung để sao chép thủ công"],"Không sao chép tự động được. Hãy nhấn Ctrl+C hoặc dùng chức năng Copy trên điện thoại.":["Automatic copying failed. Press Ctrl+C or use Copy on your phone.","Không sao chép tự động được. Hãy nhấn Ctrl+C hoặc dùng chức năng Copy trên điện thoại."],"Copied!":["Copied!","Đã sao chép!"],"Copy card name":["Copy card name","Sao chép tên card"],"Share card":["Share card","Chia sẻ card"],"Ảnh gallery có thể được tăng nét hoặc cân bằng ánh sáng để trưng bày. ":["Gallery images may be sharpened or adjusted for display. ","Ảnh gallery có thể được tăng nét hoặc cân bằng ánh sáng để trưng bày. "],"Vui lòng xem ảnh Actual để tham khảo tình trạng thực tế.":["Refer to actual photos to assess card condition.","Vui lòng xem ảnh chụp thực tế để tham khảo tình trạng card."],"Ảnh chụp thực tế có thể được cung cấp khi liên hệ.":["Actual photos may be provided on request.","Ảnh chụp thực tế có thể được cung cấp khi liên hệ."]," Không dùng ảnh đã xử lý để xác định tình trạng card.":[" Do not use enhanced images to assess card condition."," Không dùng ảnh đã xử lý để xác định tình trạng card."],"Related Cards":["Related Cards","Card liên quan"],"Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.":["Could not load cards.json. Check that it is in the same folder as index.html and contains valid JSON.","Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không."],"Image unavailable":["Image unavailable","Không có ảnh"],"Unspecified":["Unspecified","Chưa xác định"],"Autograph":["Autograph","Chữ ký (Auto)"],"On-card Auto":["On-card Auto","Chữ ký trực tiếp (On-card)"],"Relic":["Relic","Relic / Kỷ vật"],"Auto Relic":["Auto Relic","Chữ ký + Relic"],"Patch":["Patch","Patch / Mảnh áo"],"Numbered":["Numbered","Có số serial"],"Graded":["Graded","Đã chấm điểm"],"Other":["Other","Khác"],"Base":["Base","Thẻ thường"],"England":["England","Anh"],"Germany":["Germany","Đức"],"NFS":["NFS","NFS"],"Card":["Card","Card"]};
+let language="vi";try{if(localStorage.getItem("hvcards-language")==="en")language="en"}catch{}
+const t=key=>translations[key]?.[language==="en"?0:1]??key;
+const statusLabel=state=>t(SL[state]||"STATUS UNKNOWN");
+function translateStatic(){document.documentElement.lang=language;document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));for(const attr of ["placeholder","aria-label","title"]){document.querySelectorAll("[data-i18n-"+attr+"]").forEach(el=>el.setAttribute(attr,t(el.getAttribute("data-i18n-"+attr))));}document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===language)));}
+function changeLanguage(next){if(next===language)return;language=next;try{localStorage.setItem("hvcards-language",language)}catch{}translateStatic();pocketCache.clear();lastGridKey="";drawTabs();if(loaded){translateFilterOptions();renderShowcase();}render();}
+
 let loadError=false, loaded=false;
 const fmt=(n,c)=>{c=c||'VND';try{return new Intl.NumberFormat(c==='USD'?'en-US':'vi-VN',{style:'currency',currency:c,maximumFractionDigits:c==='USD'?2:0}).format(n)}catch(e){return n+' '+c}};
 
@@ -376,8 +391,8 @@ const SL={sale:'FOR SALE',nfs:'NFS',sold:'SOLD'};
 const sp=c=>{const x=(c.sport||'').trim();return ALIAS[x.toLowerCase()]||x};
 let tab='all',status='',labels={};
 const BEST_OFFER = 'or Best Offer';
-const priceTitle=c=>st(c)==='sale'?plabel(c):st(c)==='nfs'?'NFS':st(c)==='sold'?'SOLD':plabel(c);
-const priceHint=c=>({sale:BEST_OFFER,nfs:'Not for sale',sold:'No longer available'}[st(c)]||'Price unavailable');
+const priceTitle=c=>st(c)==='sale'?plabel(c):st(c)==='nfs'?'NFS':st(c)==='sold'?t('SOLD'):plabel(c);
+const priceHint=c=>t({sale:BEST_OFFER,nfs:'Not for sale',sold:'No longer available'}[st(c)]||'Price unavailable');
 // An explicit id is preferred. Existing cards get an ID derived from their image path.
 // It is independent of price, status, and list order.
 function legacyCardKey(c){
@@ -404,13 +419,13 @@ function openLinkedCard(){
   if(!key)return;
   const matches=cards.filter(c=>cardKey(c)===key||legacyCardKey(c)===key||(Array.isArray(c.aliases)&&c.aliases.includes(key)));
   if(matches.length===1)openLb(matches[0]);
-  else {$('#stat').textContent=matches.length?'Link card chưa xác định duy nhất. Vui lòng tìm card trong bộ sưu tập.':'Card này không còn trong bộ sưu tập hoặc đường dẫn không còn hợp lệ.';updateCardUrl(null);}
+  else {$('#stat').textContent=matches.length?t("Link card chưa xác định duy nhất. Vui lòng tìm card trong bộ sưu tập."):t("Card này không còn trong bộ sưu tập hoặc đường dẫn không còn hợp lệ.");updateCardUrl(null);}
 }
 function drawTabs(){
   const m=new Map();ALWAYS.forEach(x=>m.set(x.toLowerCase(),x));
   cards.forEach(c=>{const x=sp(c);if(x&&!m.has(x.toLowerCase()))m.set(x.toLowerCase(),x)});
   labels={};const box=$('#tabs');box.textContent='';
-  const mk=(key,label,tip)=>{if(key!=='all')labels[key]=label;const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.key=key;b.setAttribute('aria-selected',String(tab===key));b.textContent=label;if(tip)b.title=tip;b.onclick=()=>{tab=key;render()};box.append(b)};
+  const mk=(key,label,tip)=>{if(key!=='all')labels[key]=label;const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.key=key;b.setAttribute('aria-selected',String(tab===key));b.textContent=t(label);if(tip)b.title=tip;b.onclick=()=>{tab=key;render()};box.append(b)};
   mk('all','ALL');m.forEach((label,key)=>mk(key,label));
 }
   
@@ -437,7 +452,7 @@ function matchesSearch(card, query) {
         sp(card),
         sp(card).toLowerCase() === 'football' ? 'bóng đá soccer' : '',
         sp(card).toLowerCase() === 'f1' ? 'Formula 1' : '',
-        SL[st(card)],
+        SL[st(card)], statusLabel(st(card)), (translations[SL[st(card)]]||[]), typesOf(card).flatMap(v=>translations[v]||[v]), translations[norm(card.team)]||[],
         card.price
     ].filter(v => v != null).join(' '));
 
@@ -470,7 +485,7 @@ function thumbPath(c){
 function imageFor(c,lazy=true){
   const im=element('img');im.loading=lazy?'lazy':'eager';im.decoding='async';
   if(!lazy)im.fetchPriority='high';
-  im.alt=c.name||'Sports card';
+  im.alt=c.name||t('Sports card');
   const thumbnail=thumbPath(c),original=c.img||'';
   let usedFallback=!thumbnail||thumbnail===original;
   im.addEventListener('load',()=>{im.parentElement?.classList.remove('loading-image','image-unavailable');});
@@ -486,9 +501,10 @@ const norm=v=>String(v??'').trim();
 function fillFilters(){
   const options={brandFilter:cards.map(c=>norm(c.brand)),teamFilter:cards.map(c=>norm(c.team)||'Unspecified'),typeFilter:cards.flatMap(typesOf),seasonFilter:cards.map(c=>norm(c.season))};
   for(const [id,values] of Object.entries(options)){
-    const select=$('#'+id);for(const value of [...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b))){const opt=element('option','',value);opt.value=value;select.append(opt);}
+    const select=$('#'+id);for(const value of [...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b))){const opt=element('option','',t(value));opt.value=value;select.append(opt);}
   }
 }
+function translateFilterOptions(){for(const id of filterIds.slice(0,4)){for(const opt of $("#"+id).options){if(opt.value)opt.textContent=t(opt.value);}}}
 function advancedCount(){return filterIds.filter(id=>$('#'+id).value!=='').length;}
 function advancedMatch(c){
   const val=id=>$('#'+id).value;
@@ -508,12 +524,12 @@ let lastGridKey='',searchTimer;
 
 function makePocket(c){
   const d=element('article','pocket'+(st(c)==='sold'?' sold':''));
-  const b=element('button','pic loading-image');b.type='button';b.setAttribute('aria-label','Xem lớn: '+(c.name||'thẻ'));
-  b.append(imageFor(c));if(isNew(c))b.append(element('span','new-label','NEW'));
+  const b=element('button','pic loading-image');b.type='button';b.setAttribute('aria-label',t('Xem lớn: ')+(c.name||t('thẻ')));
+  b.append(imageFor(c));if(isNew(c))b.append(element('span','new-label',t('NEW')));
   b.onclick=()=>openLb(c);
-  const n=element('div','name',c.name||'(chưa đặt tên)');
+  const n=element('div','name',c.name||t('(chưa đặt tên)'));
   const state=st(c),priceWrap=element('div','price-wrap '+(state||'unknown'));
-  if(state==='sale')priceWrap.append(element('span','price-state','FOR SALE'));
+  if(state==='sale')priceWrap.append(element('span','price-state',t('FOR SALE')));
   priceWrap.append(element('span','price',priceTitle(c)),element('span','offer-label',priceHint(c)));
   d.append(b,n,priceWrap);return d;
 }
@@ -526,12 +542,12 @@ function renderShowcase(){
     .sort((a,b)=>(Number(a.featuredOrder)||999)-(Number(b.featuredOrder)||999)||a.i-b.i).slice(0,2);
   const hg=$('#highlightGrid');hg.replaceChildren();$('#highlights').hidden=!featured.length;
   for(const c of featured){
-    const b=element('button','highlight-card');b.type='button';b.setAttribute('aria-label','Xem chi tiết '+(c.name||'card'));
+    const b=element('button','highlight-card');b.type='button';b.setAttribute('aria-label',t('Xem chi tiết ')+(c.name||'card'));
     const media=element('div','highlight-media loading-image');media.append(imageFor(c,false));
-    b.append(element('span','highlight-label',c.featuredTitle||'Collection Highlight'),media,
-      element('span','highlight-name',c.featuredName||c.name||'Sports card'));
+    b.append(element('span','highlight-label',t(c.featuredTitle||'Collection Highlight')),media,
+      element('span','highlight-name',c.featuredName||c.name||t('Sports card')));
     if(c.featuredDescription)b.append(element('span','highlight-description',c.featuredDescription));
-    const link=element('span','highlight-link','View card');link.append(element('span','','↗'));b.append(link);
+    const link=element('span','highlight-link',t('View card'));link.append(element('span','','↗'));b.append(link);
     b.onclick=()=>openLb(c);hg.append(b);
   }
   const recent=indexed.slice().sort(recentCompare).slice(0,4);
@@ -543,23 +559,23 @@ function render(){
   document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(status===b.dataset.s)));
   const q=$('#q').value.trim(),s=$('#sort').value;
   $('#clearSearch').hidden=!$('#q').value;
-  const count=advancedCount();$('#filterCount').textContent=count?`(${count} active)`:'';
+  const count=advancedCount();$('#filterCount').textContent=count?(language==='en'?`(${count} active)`:`(${count} đang áp dụng)`):'';
   $('#resetFilters').hidden=!(tab!=='all'||status||$('#q').value||s!=='orig'||count);
   $('#archiveToggle').setAttribute('aria-pressed',String(status==='sold'));
-  $('#archiveToggle').textContent=status==='sold'?'Back to Collection':'View Sold Archive';
-  $('#exploreHeading').textContent=status==='sold'?'Sold Archive':'Explore Collection';
+  $('#archiveToggle').textContent=status==='sold'?t('Back to Collection'):t('View Sold Archive');
+  $('#exploreHeading').textContent=status==='sold'?t('Sold Archive'):t('Explore Collection');
   const lo=$('#minPrice').value,hi=$('#maxPrice').value;
-  $('#priceNote').textContent=lo!==''&&hi!==''&&Number(lo)>Number(hi)?'Min price must not exceed max price.':'Price range applies only to FOR SALE cards priced in VND.';
-  if(!loaded){$('#stat').textContent=loadError?'Không đọc được file cards.json.':'Đang tải danh sách thẻ…';return;}
+  $('#priceNote').textContent=lo!==''&&hi!==''&&Number(lo)>Number(hi)?t('Min price must not exceed max price.'):t('Price range applies only to FOR SALE cards priced in VND.');
+  if(!loaded){$('#stat').textContent=loadError?t('Không đọc được file cards.json.'):t('Đang tải danh sách thẻ…');return;}
   const base=cards.map((c,i)=>({...c,i})).filter(c=>(tab==='all'||sp(c).toLowerCase()===tab)&&(!status||st(c)===status));
   const list=base.filter(c=>advancedMatch(c)&&matchesSearch(c,q));
   const by={orig:(a,b)=>a.i-b.i,recent:recentCompare,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]||by.orig);
-  const lab=[tab==='all'?'':labels[tab],SL[status]].filter(Boolean).join(' · ');
-  $('#stat').textContent=`Hiển thị ${list.length}/${base.length} thẻ`+(lab?' · '+lab:'')+(q?` · "${q}"`:'');
+  const lab=[tab==='all'?'':t(labels[tab]),status?statusLabel(status):''].filter(Boolean).join(' · ');
+  $('#stat').textContent=(language==='en'?`Showing ${list.length}/${base.length} cards`:`Hiển thị ${list.length}/${base.length} thẻ`)+(lab?' · '+lab:'')+(q?` · "${q}"`:'');
   const g=$('#grid'),key=JSON.stringify(list.map(cardKey));
   if(key===lastGridKey)return;lastGridKey=key;
-  if(!list.length){g.replaceChildren(element('div','empty','Không có thẻ nào khớp với bộ lọc.'));return;}
+  if(!list.length){g.replaceChildren(element('div','empty',t('Không có thẻ nào khớp với bộ lọc.')));return;}
   g.replaceChildren(...list.map(c=>{const id=cardKey(c);if(!pocketCache.has(id))pocketCache.set(id,makePocket(c));return pocketCache.get(id);}));
 }
 function openLb(c){
@@ -569,7 +585,7 @@ function openLb(c){
   const mark=make('div','detail-mark');
   const logo=make('img');logo.src='assets/hvcards-emblem.webp';logo.alt='';logo.width=42;logo.height=42;
   const markText=make('span','detail-brand-text','HV');markText.append(make('span','','CARDS'));mark.append(logo,markText);
-  const x=make('button','','×');x.type='button';x.id='lbx';x.setAttribute('aria-label','Đóng chi tiết card');
+  const x=make('button','','×');x.type='button';x.id='lbx';x.setAttribute('aria-label',t('Đóng chi tiết card'));
   header.append(mark,x);
   const layout=make('div','detail-layout'),media=make('div','detail-media'),info=make('div','detail-info');
   const stage=make('div','detail-stage'),views=make('div','detail-views'),caption=make('p','detail-caption');
@@ -584,56 +600,56 @@ function openLb(c){
   const buttons=[];
   function selectPhoto(i){
     const p=photos[i];if(!p)return;
-    im.hidden=false;stage.replaceChildren(im);im.alt=(c.name||'Card')+' – '+p.label;im.src=encodeURI(p.src);
-    caption.textContent=p.description;
+    im.hidden=false;stage.replaceChildren(im);im.alt=(c.name||'Card')+' – '+t(p.label);im.src=encodeURI(p.src);
+    caption.textContent=t(p.description);
     buttons.forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)));
   }
-  im.onerror=()=>{im.hidden=true;stage.replaceChildren(make('p','detail-caption','Không tải được ảnh.'))};
-  photos.forEach((p,i)=>{const b=make('button','',p.label);b.type='button';b.onclick=()=>selectPhoto(i);buttons.push(b);views.append(b)});
-  if(photos.length)selectPhoto(0);else stage.replaceChildren(make('p','detail-caption','Chưa có ảnh card.'));
+  im.onerror=()=>{im.hidden=true;stage.replaceChildren(make('p','detail-caption',t('Không tải được ảnh.')))};
+  photos.forEach((p,i)=>{const b=make('button','',t(p.label));b.type='button';b.onclick=()=>selectPhoto(i);buttons.push(b);views.append(b)});
+  if(photos.length)selectPhoto(0);else stage.replaceChildren(make('p','detail-caption',t('Chưa có ảnh card.')));
   media.append(stage,views,caption);
   const state=st(c);
-  info.append(make('div','detail-kicker',sp(c)||'Sports card'));
-  const title=make('h2','',c.name||'Untitled card');title.id='detail-title';info.append(title);
-  info.append(make('span','detail-status '+state,SL[state]||'STATUS UNKNOWN'));
+  info.append(make('div','detail-kicker',t(sp(c)||'Sports card')));
+  const title=make('h2','',c.name||t('Untitled card'));title.id='detail-title';info.append(title);
+  info.append(make('span','detail-status '+state,statusLabel(state)));
   const price=make('div','detail-price '+(state||'unknown'),priceTitle(c));
   price.append(make('span','offer-label',priceHint(c)));info.append(price);
   const specs=make('dl','detail-specs');
   [['Hãng',c.brand],['Đội / CLB',c.team],['Mùa thẻ',c.season],['Bộ thẻ',c.set],['Serial',c.serial],['Loại card',Array.isArray(c.type)?c.type.join(', '):c.type],['Grade',c.grade],['Thông tin',c.info]].forEach(([label,value])=>{
     if(value==null||String(value).trim()==='')return;
-    const row=make('div');row.append(make('dt','',label),make('dd','',String(value)));specs.append(row);
+    const row=make('div');row.append(make('dt','',t(label)),make('dd','',label==='Loại card'?(Array.isArray(c.type)?c.type.map(t).join(', '):t(String(value))):label==='Đội / CLB'?t(String(value)):String(value)));specs.append(row);
   });
   if(specs.children.length)info.append(specs);
   const actions=make('div','detail-actions');
   function contact(label,url,primary){const a=make('a','detail-action'+(primary?' primary':''),label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';actions.append(a)}
   if(state!=='sold'){
-    contact(state==='sale'?'Contact to Buy / Trade':'Contact Collector','https://www.facebook.com/chosancut0610/',true);
+    contact(state==='sale'?t('Contact to Buy / Trade'):t('Contact Collector'),'https://www.facebook.com/chosancut0610/',true);
   }
   const copyStatus=make('p','detail-copy-status');copyStatus.setAttribute('role','status');
-  const fallback=make('textarea','detail-share-fallback');fallback.readOnly=true;fallback.hidden=true;fallback.setAttribute('aria-label','Nội dung để sao chép thủ công');
+  const fallback=make('textarea','detail-share-fallback');fallback.readOnly=true;fallback.hidden=true;fallback.setAttribute('aria-label',t('Nội dung để sao chép thủ công'));
   async function copyText(text){
     fallback.hidden=true;copyStatus.textContent='';
     try{await navigator.clipboard.writeText(text);return true}catch{}
     fallback.value=text;fallback.hidden=false;fallback.focus();fallback.select();
     try{if(document.execCommand('copy')){fallback.hidden=true;return true}}catch{}
-    copyStatus.textContent='Không sao chép tự động được. Hãy nhấn Ctrl+C hoặc dùng chức năng Copy trên điện thoại.';return false;
+    copyStatus.textContent=t("Không sao chép tự động được. Hãy nhấn Ctrl+C hoặc dùng chức năng Copy trên điện thoại.");return false;
   }
   function copyButton(label,getText){
     const button=make('button','detail-action',label);button.type='button';
-    button.onclick=async()=>{const ok=await copyText(getText());copyStatus.textContent=ok?'Copied!':copyStatus.textContent;if(ok){button.textContent='Copied!';setTimeout(()=>{button.textContent=label},1600)}};
+    button.onclick=async()=>{const ok=await copyText(getText());copyStatus.textContent=ok?t("Copied!"):copyStatus.textContent;if(ok){button.textContent=t("Copied!");setTimeout(()=>{button.textContent=label},1600)}};
     actions.append(button);
   }
-  if(String(c.name??'').trim())copyButton('Copy card name',()=>String(c.name).trim());
-  copyButton('Share card',()=>cardUrl(c));
+  if(String(c.name??'').trim())copyButton(t('Copy card name'),()=>String(c.name).trim());
+  copyButton(t('Share card'),()=>cardUrl(c));
   info.append(actions,copyStatus,fallback);
   const hasActual=photos.some(p=>p.label.startsWith('Actual'));
-  info.append(make('p','detail-note','Ảnh gallery có thể được tăng nét hoặc cân bằng ánh sáng để trưng bày. '+(hasActual?'Vui lòng xem ảnh Actual để tham khảo tình trạng thực tế.':'Ảnh chụp thực tế có thể được cung cấp khi liên hệ.')+' Không dùng ảnh đã xử lý để xác định tình trạng card.'));
+  info.append(make('p','detail-note',t("Ảnh gallery có thể được tăng nét hoặc cân bằng ánh sáng để trưng bày. ")+(hasActual?t("Vui lòng xem ảnh Actual để tham khảo tình trạng thực tế."):t("Ảnh chụp thực tế có thể được cung cấp khi liên hệ."))+t(" Không dùng ảnh đã xử lý để xác định tình trạng card.")));
   layout.append(media,info);box.append(header,layout);
   const sameSport=cards.filter(other=>cardKey(other)!==cardKey(c)&&sp(other).toLowerCase()===sp(c).toLowerCase()&&st(other)!=='sold');
   const score=other=>(c.team&&other.team===c.team?5:0)+(c.brand&&other.brand===c.brand?2:0)+typesOf(c).filter(t=>t!=='Other'&&typesOf(other).includes(t)).length;
   const related=sameSport.filter(other=>score(other)>0).sort((a,b)=>score(b)-score(a)).slice(0,4);
   if(related.length){
-    const section=make('section','related');section.append(make('h3','','Related Cards'));
+    const section=make('section','related');section.append(make('h3','',t('Related Cards')));
     const grid=make('div','related-grid');
     for(const other of related){const b=make('button','related-card');b.type='button';const pic=make('div','related-media loading-image');pic.append(imageFor(other));b.append(pic,make('span','',other.name),make('span','related-state',priceTitle(other)));b.onclick=()=>openLb(other);grid.append(b);}
     section.append(grid);box.append(section);
@@ -662,9 +678,10 @@ function updateBackTop(){ $('#backTop').hidden=window.scrollY<500; }
 window.addEventListener('scroll',updateBackTop,{passive:true});
 $('#backTop').onclick=()=>window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
 updateBackTop();
+translateStatic();document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>changeLanguage(b.dataset.lang)));
 fetch('cards.json', {cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
   .then(d=>{if(!Array.isArray(d))throw new Error('Invalid cards.json');cards=d;loaded=true;fillFilters();drawTabs();renderShowcase();render();openLinkedCard()})
-  .catch(()=>{loadError=true;$('#stat').textContent='Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.'});
+  .catch(()=>{loadError=true;$('#stat').textContent=t("Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.")});
 </script>
   <script data-goatcounter="https://vuhoanghauit.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
