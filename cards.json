@@ -237,16 +237,18 @@
   {
     "img": "SportCards/Fabinho-01.jpg",
     "back": "SportCards/Fabinho-Back-01.jpg",
-    "name": "Fabinho auto Leaf",
+    "name": "Fabinho auto Leaf /8",
     "price": "NFS",
     "sport": "Football",
-    "brand": "Leaf",
+    "brand": "Upper Deck",
     "season": "X",
     "id": "fabinho-01",
     "type": [
       "Autograph"
     ],
-    "thumbnail": "thumbnails/Fabinho-01.webp"
+    "thumbnail": "thumbnails/Fabinho-01.webp",
+    "team": "Liverpool",
+    "serial": "3/8"
   },
   {
     "img": "SportCards/Darwin-Nunez-01.jpg",
