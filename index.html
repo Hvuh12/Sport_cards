@@ -136,6 +136,60 @@ dialog::backdrop { background:#000d; backdrop-filter:blur(6px); }
 .detail-copy-status { font-size:13px; color:var(--muted); overflow-wrap:anywhere; }
 .detail-copy-status:empty { display:none; }
 .detail-share-fallback { width:100%; min-height:90px; margin-top:8px; color:var(--text); background:var(--bg); border:1px solid var(--edge); border-radius:6px; padding:8px; font:inherit; }
+
+/* V1.4 — Premium Showcase */
+html { scroll-behavior:smooth; }
+[hidden] { display:none !important; }
+.section-heading { margin:0 0 18px; }
+.section-heading h2 { font:700 clamp(28px,4vw,38px)/1.1 var(--disp); margin:0 0 5px; }
+.section-heading p { margin:0; color:var(--muted); font-size:14px; }
+.overview { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:0 0 32px; }
+.overview-item { min-width:0; padding:13px 10px; text-align:center; border:1px solid var(--edge); border-radius:9px; background:var(--pocket); }
+.overview-value { display:block; color:var(--tag); font:700 clamp(28px,4vw,38px)/1 var(--disp); }
+.overview-label { display:block; margin-top:5px; color:var(--muted); font-size:11px; letter-spacing:.06em; }
+.showcase { padding:26px 0 30px; border-top:1px solid var(--edge); border-bottom:1px solid var(--edge); }
+.showcase .section-heading { text-align:center; }
+.showcase-kicker { display:block; color:var(--tag); font-size:11px; letter-spacing:.2em; margin-bottom:10px; }
+.showcase .section-heading p { font-style:italic; }
+.highlight-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; max-width:780px; margin:auto; }
+.highlight-card { min-width:0; display:flex; flex-direction:column; text-align:left; align-items:stretch; gap:10px; padding:16px; border:1px solid #655236; border-radius:12px; background:var(--pocket); color:var(--text); font:inherit; cursor:pointer; transition:border-color .2s,transform .2s; }
+.highlight-card:hover { border-color:var(--tag); }
+.highlight-label { color:var(--tag); font-size:12px; letter-spacing:.10em; text-transform:uppercase; }
+.highlight-media { width:100%; aspect-ratio:5/7; max-height:320px; background:#000; border-radius:6px; overflow:hidden; }
+.highlight-media img { display:block; width:100%; height:100%; object-fit:contain; }
+.highlight-name { font:700 clamp(21px,3vw,32px)/1.1 var(--disp); overflow-wrap:anywhere; }
+.highlight-description { color:var(--muted); font-size:14px; overflow-wrap:anywhere; }
+.highlight-link { display:flex; align-items:center; justify-content:space-between; border-top:1px solid #403626; padding-top:10px; margin-top:auto; color:var(--tag); font-size:13px; }
+.explore-cta { display:table; margin:20px auto 0; padding:12px 24px; color:var(--tag-t); background:var(--tag); border-radius:7px; text-decoration:none; font-weight:700; }
+.explore-cta:hover { background:#e5c992; }
+.recent-section { padding:28px 0; border-bottom:1px solid var(--edge); }
+.recent-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.recent-grid .pocket { padding:8px; gap:8px; }
+.recent-grid .pic { max-height:220px; }
+.new-label { position:absolute; top:7px; left:7px; color:var(--tag-t); background:var(--tag); border-radius:4px; padding:4px 7px; font:700 13px/1 var(--disp); letter-spacing:.08em; }
+#explore { padding-top:30px; scroll-margin-top:14px; }
+.result-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 12px; margin:0 0 15px; }
+.result-bar #stat { margin:0; flex:1 1 180px; font-size:14px; }
+.reset-filters { font:500 14px/1.3 var(--body); color:var(--tag); background:var(--pocket); border:1px solid var(--edge); border-radius:6px; padding:9px 13px; cursor:pointer; }
+.reset-filters:hover { border-color:var(--tag); }
+#backTop { position:fixed; bottom:18px; right:18px; z-index:5; color:var(--tag); background:var(--pocket); border:1px solid #655236; border-radius:8px; padding:10px 14px; font:500 14px/1.3 var(--body); cursor:pointer; box-shadow:0 4px 16px #0008; }
+#backTop:hover { border-color:var(--tag); }
+body:has(#lb[open]) { overflow:hidden; }
+@media (max-width:600px) {
+  .overview { gap:6px; margin-bottom:24px; }
+  .overview-item { padding:11px 5px; }
+  .overview-label { font-size:9px; letter-spacing:0; }
+  .highlight-grid { gap:10px; }
+  .highlight-card { padding:9px; gap:8px; }
+  .highlight-label { font-size:10px; letter-spacing:.04em; }
+  .highlight-description { font-size:12px; }
+  .highlight-name { font-size:clamp(18px,5vw,26px); }
+  .recent-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .recent-grid .pic { max-height:190px; }
+  #backTop { bottom:12px; right:12px; }
+}
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+
 </style>
 </head>
 <body>
@@ -146,9 +200,26 @@ dialog::backdrop { background:#000d; backdrop-filter:blur(6px); }
     <a href="https://www.facebook.com/chosancut0610/" target="_blank" rel="noopener">Facebook</a>
     <a href="https://www.instagram.com/ha_vuu0610/" target="_blank" rel="noopener">Instagram</a>
   </p>
-  <p id="stat" aria-live="polite">
-    Đang tải danh sách thẻ…
-</p>
+  <section class="overview" aria-label="Collection Overview">
+    <div class="overview-item"><strong class="overview-value" id="totalCards">—</strong><span class="overview-label">TOTAL CARDS</span></div>
+    <div class="overview-item"><strong class="overview-value" id="saleCards">—</strong><span class="overview-label">FOR SALE</span></div>
+    <div class="overview-item"><strong class="overview-value" id="pcCards">—</strong><span class="overview-label">PERSONAL COLLECTION</span></div>
+  </section>
+  <section class="showcase" id="highlights" aria-labelledby="highlightHeading" hidden>
+    <div class="section-heading">
+      <span class="showcase-kicker">HVCARDS / SHOWCASE</span>
+      <h2 id="highlightHeading">Collection Highlights</h2>
+      <p>One legend. One rising gem.</p>
+    </div>
+    <div class="highlight-grid" id="highlightGrid"></div>
+    <a class="explore-cta" href="#explore">Explore Collection ↓</a>
+  </section>
+  <section class="recent-section" id="recent" aria-labelledby="recentHeading" hidden>
+    <div class="section-heading"><h2 id="recentHeading">Recently Added</h2><p>The latest additions to my collection.</p></div>
+    <div class="recent-grid" id="recentGrid"></div>
+  </section>
+  <section id="explore" aria-labelledby="exploreHeading">
+    <div class="section-heading"><h2 id="exploreHeading">Explore Collection</h2><p>Discover the full HVCARDS collection.</p></div>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="bar">
      <div class="search-box">     <svg class="search-icon"          width="20" height="20"          viewBox="0 0 24 24"          fill="none"          stroke="currentColor"          stroke-width="1.8"          stroke-linecap="round"          aria-hidden="true">         <circle cx="11" cy="11" r="7"/>         <path d="m16 16 4 4"/>     </svg>      <input         type="search"         id="q"         placeholder="Tìm cầu thủ, hãng, Auto..."         aria-label="Tìm kiếm card"         autocomplete="off"     >      <button         type="button"         id="clearSearch"         aria-label="Xóa tìm kiếm"         title="Xóa tìm kiếm"         hidden     >×</button> </div>
@@ -157,13 +228,20 @@ dialog::backdrop { background:#000d; backdrop-filter:blur(6px); }
     <button type="button" class="chip" data-s="sold" title="Đã bán" aria-pressed="false">SOLD</button>
     <select id="sort" aria-label="Sắp xếp">
       <option value="orig">Thứ tự trong danh sách</option>
+      <option value="recent">Recently Added</option>
       <option value="asc">Giá thấp đến cao</option>
       <option value="desc">Giá cao đến thấp</option>
       <option value="name">Tên A đến Z</option>
     </select>
   </div>
+  <div class="result-bar">
+    <p id="stat" aria-live="polite">Đang tải danh sách thẻ…</p>
+    <button type="button" id="resetFilters" class="reset-filters" hidden>Reset Filters</button>
+  </div>
   <div class="grid" id="grid"></div>
+  </section>
 </main>
+<button type="button" id="backTop" hidden aria-label="Về đầu trang">↑ Back to Top</button>
 <dialog id="lb" aria-label="Chi tiết card"><div id="lbc"></div></dialog>
 <script>
 const $=s=>document.querySelector(s);
@@ -238,6 +316,7 @@ function matchesSearch(card, query) {
         card.brand,
         card.season,
         card.info,
+        card.set, card.serial, card.type, card.grade,
         card.sport,
         sp(card),
         sp(card).toLowerCase() === 'football' ? 'bóng đá soccer' : '',
@@ -251,36 +330,70 @@ function matchesSearch(card, query) {
     );
 }
 
+// Dates are calendar dates in Vietnam; undated cards fall back to JSON order.
+const DAY=86400000;
+function dateValue(c){
+  const date=String(c.dateAdded??'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;
+  const t=Date.parse(date+'T00:00:00Z');
+  return Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===date?t:null;
+}
+function vietnamToday(){
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+  const get=type=>parts.find(p=>p.type===type).value;
+  return Date.UTC(+get('year'),+get('month')-1,+get('day'));
+}
+function isNew(c){const t=dateValue(c);if(t===null)return false;const age=(vietnamToday()-t)/DAY;return age>=0&&age<7;}
+function recentCompare(a,b){return (dateValue(b)??-Infinity)-(dateValue(a)??-Infinity)||a.i-b.i;}
+function element(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+function imageFor(c,lazy=true){const im=element('img');im.loading=lazy?'lazy':'eager';im.decoding='async';im.alt=c.name||'Sports card';if(c.img)im.src=encodeURI(c.img);return im;}
+function makePocket(c){
+  const d=element('article','pocket'+(st(c)==='sold'?' sold':''));
+  const b=element('button','pic');b.type='button';b.setAttribute('aria-label','Xem lớn: '+(c.name||'thẻ'));
+  b.append(imageFor(c));if(isNew(c))b.append(element('span','new-label','NEW'));
+  b.onclick=()=>openLb(c);
+  const n=element('div','name',c.name||'(chưa đặt tên)');
+  const state=st(c),priceWrap=element('div','price-wrap '+(state||'unknown'));
+  if(state==='sale')priceWrap.append(element('span','price-state','FOR SALE'));
+  priceWrap.append(element('span','price',priceTitle(c)),element('span','offer-label',priceHint(c)));
+  d.append(b,n,priceWrap);return d;
+}
+function renderShowcase(){
+  $('#totalCards').textContent=cards.length;
+  $('#saleCards').textContent=cards.filter(c=>st(c)==='sale').length;
+  $('#pcCards').textContent=cards.filter(c=>st(c)==='nfs').length;
+  const indexed=cards.map((c,i)=>({...c,i}));
+  const featured=indexed.filter(c=>c.featured===true&&st(c)!=='sold')
+    .sort((a,b)=>(Number(a.featuredOrder)||999)-(Number(b.featuredOrder)||999)||a.i-b.i).slice(0,2);
+  const hg=$('#highlightGrid');hg.replaceChildren();$('#highlights').hidden=!featured.length;
+  for(const c of featured){
+    const b=element('button','highlight-card');b.type='button';b.setAttribute('aria-label','Xem chi tiết '+(c.name||'card'));
+    const media=element('div','highlight-media');media.append(imageFor(c,false));
+    b.append(element('span','highlight-label',c.featuredTitle||'Collection Highlight'),media,
+      element('span','highlight-name',c.featuredName||c.name||'Sports card'));
+    if(c.featuredDescription)b.append(element('span','highlight-description',c.featuredDescription));
+    const link=element('span','highlight-link','View card');link.append(element('span','','↗'));b.append(link);
+    b.onclick=()=>openLb(c);hg.append(b);
+  }
+  const recent=indexed.slice().sort(recentCompare).slice(0,4);
+  $('#recent').hidden=!recent.length;$('#recentGrid').replaceChildren(...recent.map(makePocket));
+}
 function render(){
   drawTabs();
   document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(status===b.dataset.s)));
   const q=$('#q').value.trim(),s=$('#sort').value;
-  $('#clearSearch').hidden = !$('#q').value;
-  if(!loaded){ $('#stat').textContent=loadError?'Không đọc được file cards.json.':'Đang tải danh sách thẻ…'; return; }
+  $('#clearSearch').hidden=!$('#q').value;
+  $('#resetFilters').hidden=!(tab!=='all'||status||$('#q').value||s!=='orig');
+  if(!loaded){$('#stat').textContent=loadError?'Không đọc được file cards.json.':'Đang tải danh sách thẻ…';return;}
   const base=cards.map((c,i)=>({...c,i})).filter(c=>(tab==='all'||sp(c).toLowerCase()===tab)&&(!status||st(c)===status));
-  const list = base.filter(c => matchesSearch(c, q));
-  const by={orig:(a,b)=>a.i-b.i,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
-  list.sort(by[s]);
-  const lab=[tab==='all'?'':labels[tab],SL[status]].filter(Boolean).map(x=>' '+x).join('');
-  $('#stat').textContent = `Hiển thị ${list.length}/${base.length} thẻ${lab}` + (q ? ` · "${q}"` : '');
-  const g=$('#grid');g.textContent='';
-  if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=base.length?'Không có thẻ nào khớp với từ khoá.':(status?'Chưa có thẻ nào ở mục này.':tab==='all'?'Thêm thẻ vào file cards.json để chúng hiện ở đây.':'Thêm “sport”: “'+labels[tab]+'” vào các thẻ thuộc mục này trong cards.json.');g.append(e);return}
-  for(const c of list){
-    const src=encodeURI(c.img||'');
-    const d=document.createElement('div');d.className='pocket'+(st(c)==='sold'?' sold':'');
-    const b=document.createElement('button');b.className='pic';b.type='button';b.setAttribute('aria-label','Xem lớn: '+(c.name||'thẻ'));
-    const im=document.createElement('img');im.loading='lazy';im.src=src;im.alt=c.name||'Thẻ bóng đá';
-    const p=document.createElement('span');p.className='price';p.textContent=priceTitle(c);
-    b.append(im);
-    b.onclick=()=>openLb(c);
-    const n=document.createElement('div');n.className='name';n.textContent=c.name||'(chưa đặt tên)';
-    const state=st(c);
-    const priceWrap=document.createElement('div');priceWrap.className='price-wrap '+(state||'unknown');
-    if(state==='sale'){const label=document.createElement('span');label.className='price-state';label.textContent='FOR SALE';priceWrap.append(label)}
-    priceWrap.append(p);
-    const hint=document.createElement('span');hint.className='offer-label';hint.textContent=priceHint(c);priceWrap.append(hint);
-    d.append(b,n,priceWrap);g.append(d);
-  }
+  const list=base.filter(c=>matchesSearch(c,q));
+  const by={orig:(a,b)=>a.i-b.i,recent:recentCompare,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
+  list.sort(by[s]||by.orig);
+  const lab=[tab==='all'?'':labels[tab],SL[status]].filter(Boolean).join(' · ');
+  $('#stat').textContent=`Hiển thị ${list.length}/${base.length} thẻ`+(lab?' · '+lab:'')+(q?` · "${q}"`:'');
+  const g=$('#grid');g.replaceChildren();
+  if(!list.length){g.append(element('div','empty',base.length?'Không có thẻ nào khớp với từ khoá.':'Chưa có thẻ nào ở mục này.'));return;}
+  g.append(...list.map(makePocket));
 }
 function openLb(c){
   const box=$('#lbc'); box.replaceChildren();
@@ -363,8 +476,13 @@ $('#q').addEventListener('keydown',e=>{
   if(e.key==='Escape' && $('#q').value){e.preventDefault();clearSearch();}
 });
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{status=status===b.dataset.s?'':b.dataset.s;render()});
+$('#resetFilters').onclick=()=>{tab='all';status='';$('#q').value='';$('#sort').value='orig';render();$('#q').focus();};
+function updateBackTop(){ $('#backTop').hidden=window.scrollY<500; }
+window.addEventListener('scroll',updateBackTop,{passive:true});
+$('#backTop').onclick=()=>window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+updateBackTop();
 fetch('cards.json', {cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
-  .then(d=>{if(!Array.isArray(d))throw new Error('Invalid cards.json');cards=d;loaded=true;render();openLinkedCard()})
+  .then(d=>{if(!Array.isArray(d))throw new Error('Invalid cards.json');cards=d;loaded=true;renderShowcase();render();openLinkedCard()})
   .catch(()=>{loadError=true;$('#stat').textContent='Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.'});
 </script>
   <script data-goatcounter="https://vuhoanghauit.goatcounter.com/count"
