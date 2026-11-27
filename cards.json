@@ -12,7 +12,16 @@
     "featuredTitle": "The Rising Star",
     "featuredName": "Rio Ngumoha",
     "featuredDescription": "Museum Autograph Relic Museum /99",
-    "dateAdded": "2026-11-27"
+    "dateAdded": "2026-11-27",
+    "id": "rio-ngumoha-02",
+    "team": "Liverpool",
+    "type": [
+      "Autograph",
+      "Relic",
+      "Auto Relic",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Rio-Ngumoha-02.webp"
   },
   {
     "img": "SportCards/Wayne-Rooney-01.jpg",
@@ -21,7 +30,13 @@
     "price": 1900000,
     "sport": "Football",
     "brand": "Panini",
-    "season": "WC 2026"
+    "season": "WC 2026",
+    "id": "wayne-rooney-01",
+    "team": "England",
+    "type": [
+      "Autograph"
+    ],
+    "thumbnail": "thumbnails/Wayne-Rooney-01.webp"
   },
   {
     "img": "SportCards/Milos-Kerkez-01.jpg",
@@ -30,7 +45,14 @@
     "price": 900000,
     "sport": "Football",
     "brand": "Topps",
-    "season": "2026-27"
+    "season": "2026-27",
+    "id": "milos-kerkez-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Milos-Kerkez-01.webp"
   },
   {
     "img": "SportCards/Fernando-Torres-01.jpg",
@@ -39,7 +61,15 @@
     "price": 6500000,
     "sport": "Football",
     "brand": "Topps",
-    "season": "2025-26"
+    "season": "2025-26",
+    "id": "fernando-torres-01",
+    "team": "Chelsea",
+    "type": [
+      "Autograph",
+      "On-card Auto",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Fernando-Torres-01.webp"
   },
   {
     "img": "SportCards/Bradley-Barcola-01.jpg",
@@ -48,7 +78,13 @@
     "price": "SOLD",
     "sport": "Football",
     "brand": "Topps",
-    "season": "2025-26"
+    "season": "2025-26",
+    "id": "bradley-barcola-01",
+    "team": "Paris Saint-Germain",
+    "type": [
+      "Autograph"
+    ],
+    "thumbnail": "thumbnails/Bradley-Barcola-01.webp"
   },
   {
     "img": "SportCards/Cody-Gakpo-01.jpg",
@@ -57,7 +93,14 @@
     "price": 600000,
     "sport": "Football",
     "brand": "Topps",
-    "season": "2024-25"
+    "season": "2024-25",
+    "id": "cody-gakpo-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Cody-Gakpo-01.webp"
   },
   {
     "img": "SportCards/Charles-Leclerc-01.jpg",
@@ -66,16 +109,28 @@
     "price": "NFS",
     "sport": "F1",
     "brand": "Topps",
-    "season": "2025-26"
+    "season": "2025-26",
+    "id": "charles-leclerc-01",
+    "team": "Ferrari",
+    "type": [
+      "Graded"
+    ],
+    "thumbnail": "thumbnails/Charles-Leclerc-01.webp"
   },
   {
     "img": "SportCards/Mo-Salah-01.jpg",
-    "back": "SportCards/Mo-Salah-01-back.jpg",
+    "back": "SportCards/Mo-Salah-Back-01.jpg",
     "name": "Mo Salah Topps Now",
     "price": 150000,
     "sport": "Football",
     "brand": "Topps",
-    "season": "2025-26"
+    "season": "2025-26",
+    "id": "mo-salah-01",
+    "team": "Liverpool",
+    "type": [
+      "Other"
+    ],
+    "thumbnail": "thumbnails/Mo-Salah-01.webp"
   },
   {
     "img": "SportCards/Rio-Ngumoha-01.jpg",
@@ -84,7 +139,14 @@
     "price": "SOLD",
     "sport": "Football",
     "brand": "Topps",
-    "season": "2025-26"
+    "season": "2025-26",
+    "id": "rio-ngumoha-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Rio-Ngumoha-01.webp"
   },
   {
     "img": "SportCards/Roberto-Firmino-01.jpg",
@@ -93,7 +155,16 @@
     "price": "NFS",
     "sport": "Football",
     "brand": "Panini",
-    "season": "2025-26"
+    "season": "2025-26",
+    "id": "roberto-firmino-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph",
+      "Relic",
+      "Auto Relic",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Roberto-Firmino-01.webp"
   },
   {
     "img": "SportCards/Steven-Gerrard-01.jpg",
@@ -107,7 +178,14 @@
     "featuredOrder": 1,
     "featuredTitle": "The Legend",
     "featuredName": "Steven Gerrard",
-    "featuredDescription": "Finest Autograph /99"
+    "featuredDescription": "Finest Autograph /99",
+    "id": "steven-gerrard-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Steven-Gerrard-01.webp"
   },
   {
     "img": "SportCards/Virgil-Van-Dijk-01.jpg",
@@ -116,7 +194,14 @@
     "price": "NFS",
     "sport": "Football",
     "brand": "Topps",
-    "season": "2024-25"
+    "season": "2024-25",
+    "id": "virgil-van-dijk-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Virgil-Van-Dijk-01.webp"
   },
   {
     "img": "SportCards/Max-Verstappen-01.jpg",
@@ -125,7 +210,14 @@
     "price": "SOLD",
     "sport": "F1",
     "brand": "Topps",
-    "season": "2023"
+    "season": "2023",
+    "id": "max-verstappen-01",
+    "team": "Red Bull Racing",
+    "type": [
+      "Numbered",
+      "Graded"
+    ],
+    "thumbnail": "thumbnails/Max-Verstappen-01.webp"
   },
   {
     "img": "SportCards/Mo-Salah-02.jpg",
@@ -134,7 +226,13 @@
     "price": 200000,
     "sport": "Football",
     "brand": "Topps",
-    "season": "2025-26"
+    "season": "2025-26",
+    "id": "mo-salah-02",
+    "team": "Liverpool",
+    "type": [
+      "Other"
+    ],
+    "thumbnail": "thumbnails/Mo-Salah-02.webp"
   },
   {
     "img": "SportCards/Fabinho-01.jpg",
@@ -143,7 +241,12 @@
     "price": "NFS",
     "sport": "Football",
     "brand": "Leaf",
-    "season": "X"
+    "season": "X",
+    "id": "fabinho-01",
+    "type": [
+      "Autograph"
+    ],
+    "thumbnail": "thumbnails/Fabinho-01.webp"
   },
   {
     "img": "SportCards/Darwin-Nunez-01.jpg",
@@ -152,25 +255,42 @@
     "price": 400000,
     "sport": "Football",
     "brand": "Topps",
-    "season": "2024-25"
+    "season": "2024-25",
+    "id": "darwin-nunez-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph",
+      "Numbered"
+    ],
+    "thumbnail": "thumbnails/Darwin-Nunez-01.webp"
   },
   {
     "img": "SportCards/Rhys-Williams-01.jpg",
-    "back": "SportCards/Rhys-Williams-Back-01.jpg",
     "name": "Rhys-Williams auto team set",
     "price": 350000,
     "sport": "Football",
     "brand": "Topps",
-    "season": "2021-22"
+    "season": "2021-22",
+    "id": "rhys-williams-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph"
+    ],
+    "thumbnail": "thumbnails/Rhys-Williams-01.webp"
   },
   {
     "img": "SportCards/Dominik-Szoboszlai-01.jpg",
-    "back": "SportCards/Dominik-Szoboszlai-Back-01.jpg",
     "name": "Dominik Szoboszlai auto UCC",
     "price": "SOLD",
     "sport": "Football",
     "brand": "Topps",
-    "season": "2024-25"
+    "season": "2024-25",
+    "id": "dominik-szoboszlai-01",
+    "team": "Liverpool",
+    "type": [
+      "Autograph"
+    ],
+    "thumbnail": "thumbnails/Dominik-Szoboszlai-01.webp"
   },
   {
     "img": "SportCards/Florian-Wirtz-01.jpg",
@@ -178,6 +298,12 @@
     "price": "SOLD",
     "sport": "Football",
     "brand": "Panini",
-    "season": "WC 2026"
+    "season": "WC 2026",
+    "id": "florian-wirtz-01",
+    "team": "Germany",
+    "type": [
+      "Autograph"
+    ],
+    "thumbnail": "thumbnails/Florian-Wirtz-01.webp"
   }
 ]

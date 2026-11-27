@@ -250,6 +250,32 @@ body:has(#lb[open]) { overflow:hidden; }
   .footer-links { flex-basis:100%; }
 }
 
+/* V1.6 — Advanced Collection & Performance */
+.advanced { border:1px solid var(--edge); border-radius:10px; background:var(--pocket); margin:0 0 16px; padding:12px 16px; }
+.advanced summary { cursor:pointer; font-weight:600; color:var(--tag); }
+.advanced summary::marker { color:var(--tag); }
+.advanced-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:14px; }
+.advanced-grid label { min-width:0; display:flex; flex-direction:column; gap:5px; color:var(--muted); font-size:13px; }
+.advanced-grid select,.advanced-grid input { width:100%; min-width:0; }
+.price-range { grid-column:span 2; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.filter-note { margin:10px 0 0; font-size:12px; color:var(--muted); }
+#filterCount { font-size:12px; color:var(--muted); margin-left:8px; }
+#archiveToggle { margin:0 0 12px; display:inline-block; }
+.pic,.highlight-media,.related-media { position:relative; isolation:isolate; }
+.loading-image { background:linear-gradient(105deg,#151517 20%,#2a2a2e 42%,#151517 64%); background-size:240% 100%; animation:hv-shimmer 1.4s linear infinite; }
+.loading-image img { opacity:0!important; }
+@keyframes hv-shimmer { from {background-position:100% 0} to {background-position:-100% 0} }
+.image-unavailable::after { content:'Image unavailable'; position:absolute; inset:0; display:grid; place-items:center; color:var(--muted); font-size:12px; padding:6px; text-align:center; background:#101012; }
+.related { margin-top:22px; padding-top:16px; border-top:1px solid var(--edge); }
+.related h3 { font:700 24px/1.1 var(--disp); margin:0 0 12px; }
+.related-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.related-card { display:flex; flex-direction:column; gap:6px; min-width:0; background:var(--pocket); color:var(--text); border:1px solid var(--edge); border-radius:8px; padding:8px; cursor:pointer; text-align:left; font:inherit; font-size:12px; overflow-wrap:anywhere; }
+.related-card:hover { border-color:var(--tag); }
+.related-media { aspect-ratio:5/7; background:#000; border-radius:4px; overflow:hidden; }
+.related-media img { display:block; width:100%; height:100%; object-fit:contain; }
+.related-state { color:var(--muted); font-size:11px; }
+@media(max-width:700px) { .advanced-grid {grid-template-columns:repeat(2,minmax(0,1fr));} .related-grid {grid-template-columns:repeat(2,minmax(0,1fr));} }
+@media(prefers-reduced-motion:reduce) { .loading-image {animation:none;} }
 </style>
 </head>
 <body>
@@ -299,6 +325,21 @@ body:has(#lb[open]) { overflow:hidden; }
       <option value="name">Tên A đến Z</option>
     </select>
   </div>
+  <details class="advanced" id="advancedFilters">
+    <summary>Advanced Filters <span id="filterCount"></span></summary>
+    <div class="advanced-grid">
+      <label>Manufacturer<select id="brandFilter"><option value="">All brands</option></select></label>
+      <label>Team / National Team<select id="teamFilter"><option value="">All teams</option></select></label>
+      <label>Card Type<select id="typeFilter"><option value="">All types</option></select></label>
+      <label>Season<select id="seasonFilter"><option value="">All seasons</option></select></label>
+      <div class="price-range">
+        <label>Min price (VND)<input id="minPrice" type="number" min="0" step="any" placeholder="0" inputmode="numeric"></label>
+        <label>Max price (VND)<input id="maxPrice" type="number" min="0" step="any" placeholder="No limit" inputmode="numeric"></label>
+      </div>
+    </div>
+    <p class="filter-note" id="priceNote">Price range applies only to FOR SALE cards priced in VND.</p>
+  </details>
+  <button type="button" class="reset-filters" id="archiveToggle" aria-pressed="false">View Sold Archive</button>
   <div class="result-bar">
     <p id="stat" aria-live="polite">Đang tải danh sách thẻ…</p>
     <button type="button" id="resetFilters" class="reset-filters" hidden>Reset Filters</button>
@@ -339,15 +380,14 @@ const priceTitle=c=>st(c)==='sale'?plabel(c):st(c)==='nfs'?'NFS':st(c)==='sold'?
 const priceHint=c=>({sale:BEST_OFFER,nfs:'Not for sale',sold:'No longer available'}[st(c)]||'Price unavailable');
 // An explicit id is preferred. Existing cards get an ID derived from their image path.
 // It is independent of price, status, and list order.
-function cardKey(c){
-  const id=String(c.id??'').trim();
-  if(id)return id;
+function legacyCardKey(c){
   const source=String(c.img||c.back||c.actual||[c.name,c.brand,c.season,c.serial,c.info].join('|')).trim();
   // Encode the entire key rather than relying on a short hash that can collide.
   const bytes=new TextEncoder().encode(source);
   const encoded=btoa(Array.from(bytes,b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   return 'auto-'+encoded;
 }
+function cardKey(c){return String(c.id??'').trim()||legacyCardKey(c);}
 function cardUrl(c){
   const url=new URL(location.href);
   url.search='';url.hash='';
@@ -362,7 +402,7 @@ function updateCardUrl(c){
 function openLinkedCard(){
   const key=new URL(location.href).searchParams.get('card');
   if(!key)return;
-  const matches=cards.filter(c=>cardKey(c)===key);
+  const matches=cards.filter(c=>cardKey(c)===key||legacyCardKey(c)===key||(Array.isArray(c.aliases)&&c.aliases.includes(key)));
   if(matches.length===1)openLb(matches[0]);
   else {$('#stat').textContent=matches.length?'Link card chưa xác định duy nhất. Vui lòng tìm card trong bộ sưu tập.':'Card này không còn trong bộ sưu tập hoặc đường dẫn không còn hợp lệ.';updateCardUrl(null);}
 }
@@ -370,7 +410,7 @@ function drawTabs(){
   const m=new Map();ALWAYS.forEach(x=>m.set(x.toLowerCase(),x));
   cards.forEach(c=>{const x=sp(c);if(x&&!m.has(x.toLowerCase()))m.set(x.toLowerCase(),x)});
   labels={};const box=$('#tabs');box.textContent='';
-  const mk=(key,label,tip)=>{if(key!=='all')labels[key]=label;const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(tab===key));b.textContent=label;if(tip)b.title=tip;b.onclick=()=>{tab=key;render()};box.append(b)};
+  const mk=(key,label,tip)=>{if(key!=='all')labels[key]=label;const b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.key=key;b.setAttribute('aria-selected',String(tab===key));b.textContent=label;if(tip)b.title=tip;b.onclick=()=>{tab=key;render()};box.append(b)};
   mk('all','ALL');m.forEach((label,key)=>mk(key,label));
 }
   
@@ -392,7 +432,7 @@ function matchesSearch(card, query) {
         card.brand,
         card.season,
         card.info,
-        card.set, card.serial, card.type, card.grade,
+        card.set, card.serial, card.type, card.grade, card.team, card.id,
         card.sport,
         sp(card),
         sp(card).toLowerCase() === 'football' ? 'bóng đá soccer' : '',
@@ -422,10 +462,53 @@ function vietnamToday(){
 function isNew(c){const t=dateValue(c);if(t===null)return false;const age=(vietnamToday()-t)/DAY;return age>=0&&age<7;}
 function recentCompare(a,b){return (dateValue(b)??-Infinity)-(dateValue(a)??-Infinity)||a.i-b.i;}
 function element(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
-function imageFor(c,lazy=true){const im=element('img');im.loading=lazy?'lazy':'eager';im.decoding='async';im.alt=c.name||'Sports card';if(c.img)im.src=encodeURI(c.img);return im;}
+function thumbPath(c){
+  if(c.thumbnail)return c.thumbnail;
+  if(!c.img||!/^SportCards\//i.test(c.img))return '';
+  return 'thumbnails/'+c.img.split('/').pop().replace(/\.[^.]+$/,'.webp');
+}
+function imageFor(c,lazy=true){
+  const im=element('img');im.loading=lazy?'lazy':'eager';im.decoding='async';
+  if(!lazy)im.fetchPriority='high';
+  im.alt=c.name||'Sports card';
+  const thumbnail=thumbPath(c),original=c.img||'';
+  let usedFallback=!thumbnail||thumbnail===original;
+  im.addEventListener('load',()=>{im.parentElement?.classList.remove('loading-image','image-unavailable');});
+  im.addEventListener('error',()=>{
+    if(!usedFallback&&original){usedFallback=true;im.src=encodeURI(original);return;}
+    im.parentElement?.classList.remove('loading-image');im.parentElement?.classList.add('image-unavailable');
+  });
+  im.src=encodeURI(thumbnail||original);return im;
+}
+const filterIds=['brandFilter','teamFilter','typeFilter','seasonFilter','minPrice','maxPrice'];
+const typesOf=c=>Array.isArray(c.type)?c.type.map(String):c.type?[String(c.type)]:['Other'];
+const norm=v=>String(v??'').trim();
+function fillFilters(){
+  const options={brandFilter:cards.map(c=>norm(c.brand)),teamFilter:cards.map(c=>norm(c.team)||'Unspecified'),typeFilter:cards.flatMap(typesOf),seasonFilter:cards.map(c=>norm(c.season))};
+  for(const [id,values] of Object.entries(options)){
+    const select=$('#'+id);for(const value of [...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b))){const opt=element('option','',value);opt.value=value;select.append(opt);}
+  }
+}
+function advancedCount(){return filterIds.filter(id=>$('#'+id).value!=='').length;}
+function advancedMatch(c){
+  const val=id=>$('#'+id).value;
+  if(val('brandFilter')&&norm(c.brand)!==val('brandFilter'))return false;
+  if(val('teamFilter')&&(norm(c.team)||'Unspecified')!==val('teamFilter'))return false;
+  if(val('typeFilter')&&!typesOf(c).includes(val('typeFilter')))return false;
+  if(val('seasonFilter')&&norm(c.season)!==val('seasonFilter'))return false;
+  const lo=val('minPrice'),hi=val('maxPrice');
+  if(lo!==''||hi!==''){
+    if(st(c)!=='sale'||String(c.cur||'VND').toUpperCase()!=='VND')return false;
+    if((lo!==''&&pn(c)<Number(lo))||(hi!==''&&pn(c)>Number(hi)))return false;
+  }
+  return true;
+}
+const pocketCache=new Map();
+let lastGridKey='',searchTimer;
+
 function makePocket(c){
   const d=element('article','pocket'+(st(c)==='sold'?' sold':''));
-  const b=element('button','pic');b.type='button';b.setAttribute('aria-label','Xem lớn: '+(c.name||'thẻ'));
+  const b=element('button','pic loading-image');b.type='button';b.setAttribute('aria-label','Xem lớn: '+(c.name||'thẻ'));
   b.append(imageFor(c));if(isNew(c))b.append(element('span','new-label','NEW'));
   b.onclick=()=>openLb(c);
   const n=element('div','name',c.name||'(chưa đặt tên)');
@@ -444,7 +527,7 @@ function renderShowcase(){
   const hg=$('#highlightGrid');hg.replaceChildren();$('#highlights').hidden=!featured.length;
   for(const c of featured){
     const b=element('button','highlight-card');b.type='button';b.setAttribute('aria-label','Xem chi tiết '+(c.name||'card'));
-    const media=element('div','highlight-media');media.append(imageFor(c,false));
+    const media=element('div','highlight-media loading-image');media.append(imageFor(c,false));
     b.append(element('span','highlight-label',c.featuredTitle||'Collection Highlight'),media,
       element('span','highlight-name',c.featuredName||c.name||'Sports card'));
     if(c.featuredDescription)b.append(element('span','highlight-description',c.featuredDescription));
@@ -455,21 +538,29 @@ function renderShowcase(){
   $('#recent').hidden=!recent.length;$('#recentGrid').replaceChildren(...recent.map(makePocket));
 }
 function render(){
-  drawTabs();
+  if(!$('#tabs').children.length)drawTabs();
+  $('#tabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.key===tab)));
   document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(status===b.dataset.s)));
   const q=$('#q').value.trim(),s=$('#sort').value;
   $('#clearSearch').hidden=!$('#q').value;
-  $('#resetFilters').hidden=!(tab!=='all'||status||$('#q').value||s!=='orig');
+  const count=advancedCount();$('#filterCount').textContent=count?`(${count} active)`:'';
+  $('#resetFilters').hidden=!(tab!=='all'||status||$('#q').value||s!=='orig'||count);
+  $('#archiveToggle').setAttribute('aria-pressed',String(status==='sold'));
+  $('#archiveToggle').textContent=status==='sold'?'Back to Collection':'View Sold Archive';
+  $('#exploreHeading').textContent=status==='sold'?'Sold Archive':'Explore Collection';
+  const lo=$('#minPrice').value,hi=$('#maxPrice').value;
+  $('#priceNote').textContent=lo!==''&&hi!==''&&Number(lo)>Number(hi)?'Min price must not exceed max price.':'Price range applies only to FOR SALE cards priced in VND.';
   if(!loaded){$('#stat').textContent=loadError?'Không đọc được file cards.json.':'Đang tải danh sách thẻ…';return;}
   const base=cards.map((c,i)=>({...c,i})).filter(c=>(tab==='all'||sp(c).toLowerCase()===tab)&&(!status||st(c)===status));
-  const list=base.filter(c=>matchesSearch(c,q));
+  const list=base.filter(c=>advancedMatch(c)&&matchesSearch(c,q));
   const by={orig:(a,b)=>a.i-b.i,recent:recentCompare,asc:cmp(1),desc:cmp(-1),name:(a,b)=>(a.name||'').localeCompare(b.name||'','vi')};
   list.sort(by[s]||by.orig);
   const lab=[tab==='all'?'':labels[tab],SL[status]].filter(Boolean).join(' · ');
   $('#stat').textContent=`Hiển thị ${list.length}/${base.length} thẻ`+(lab?' · '+lab:'')+(q?` · "${q}"`:'');
-  const g=$('#grid');g.replaceChildren();
-  if(!list.length){g.append(element('div','empty',base.length?'Không có thẻ nào khớp với từ khoá.':'Chưa có thẻ nào ở mục này.'));return;}
-  g.append(...list.map(makePocket));
+  const g=$('#grid'),key=JSON.stringify(list.map(cardKey));
+  if(key===lastGridKey)return;lastGridKey=key;
+  if(!list.length){g.replaceChildren(element('div','empty','Không có thẻ nào khớp với bộ lọc.'));return;}
+  g.replaceChildren(...list.map(c=>{const id=cardKey(c);if(!pocketCache.has(id))pocketCache.set(id,makePocket(c));return pocketCache.get(id);}));
 }
 function openLb(c){
   const box=$('#lbc'); box.replaceChildren();
@@ -508,7 +599,7 @@ function openLb(c){
   const price=make('div','detail-price '+(state||'unknown'),priceTitle(c));
   price.append(make('span','offer-label',priceHint(c)));info.append(price);
   const specs=make('dl','detail-specs');
-  [['Hãng',c.brand],['Mùa thẻ',c.season],['Bộ thẻ',c.set],['Serial',c.serial],['Loại card',Array.isArray(c.type)?c.type.join(', '):c.type],['Grade',c.grade],['Thông tin',c.info]].forEach(([label,value])=>{
+  [['Hãng',c.brand],['Đội / CLB',c.team],['Mùa thẻ',c.season],['Bộ thẻ',c.set],['Serial',c.serial],['Loại card',Array.isArray(c.type)?c.type.join(', '):c.type],['Grade',c.grade],['Thông tin',c.info]].forEach(([label,value])=>{
     if(value==null||String(value).trim()==='')return;
     const row=make('div');row.append(make('dt','',label),make('dd','',String(value)));specs.append(row);
   });
@@ -538,11 +629,20 @@ function openLb(c){
   const hasActual=photos.some(p=>p.label.startsWith('Actual'));
   info.append(make('p','detail-note','Ảnh gallery có thể được tăng nét hoặc cân bằng ánh sáng để trưng bày. '+(hasActual?'Vui lòng xem ảnh Actual để tham khảo tình trạng thực tế.':'Ảnh chụp thực tế có thể được cung cấp khi liên hệ.')+' Không dùng ảnh đã xử lý để xác định tình trạng card.'));
   layout.append(media,info);box.append(header,layout);
+  const sameSport=cards.filter(other=>cardKey(other)!==cardKey(c)&&sp(other).toLowerCase()===sp(c).toLowerCase()&&st(other)!=='sold');
+  const score=other=>(c.team&&other.team===c.team?5:0)+(c.brand&&other.brand===c.brand?2:0)+typesOf(c).filter(t=>t!=='Other'&&typesOf(other).includes(t)).length;
+  const related=sameSport.filter(other=>score(other)>0).sort((a,b)=>score(b)-score(a)).slice(0,4);
+  if(related.length){
+    const section=make('section','related');section.append(make('h3','','Related Cards'));
+    const grid=make('div','related-grid');
+    for(const other of related){const b=make('button','related-card');b.type='button';const pic=make('div','related-media loading-image');pic.append(imageFor(other));b.append(pic,make('span','',other.name),make('span','related-state',priceTitle(other)));b.onclick=()=>openLb(other);grid.append(b);}
+    section.append(grid);box.append(section);
+  }
   $('#lb').setAttribute('aria-labelledby','detail-title');if(!$('#lb').open)$('#lb').showModal();box.scrollTop=0;updateCardUrl(c);
 }
 $('#lb').onclick=e=>{if(e.target===$('#lb')||e.target.id==='lbx')$('#lb').close()};
 $('#lb').addEventListener('close',()=>updateCardUrl(null));
-$('#q').oninput=render;
+$('#q').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(render,100);};
 $('#sort').onchange=render;
 function clearSearch(){
   $('#q').value='';
@@ -554,13 +654,16 @@ $('#q').addEventListener('keydown',e=>{
   if(e.key==='Escape' && $('#q').value){e.preventDefault();clearSearch();}
 });
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{status=status===b.dataset.s?'':b.dataset.s;render()});
-$('#resetFilters').onclick=()=>{tab='all';status='';$('#q').value='';$('#sort').value='orig';render();$('#q').focus();};
+function resetAll(){tab='all';status='';$('#q').value='';$('#sort').value='orig';filterIds.forEach(id=>$('#'+id).value='');}
+$('#resetFilters').onclick=()=>{resetAll();render();$('#q').focus();};
+$('#archiveToggle').onclick=()=>{const wasSold=status==='sold';resetAll();if(!wasSold)status='sold';render();};
+filterIds.forEach(id=>$('#'+id).addEventListener(id.endsWith('Price')?'input':'change',render));
 function updateBackTop(){ $('#backTop').hidden=window.scrollY<500; }
 window.addEventListener('scroll',updateBackTop,{passive:true});
 $('#backTop').onclick=()=>window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
 updateBackTop();
 fetch('cards.json', {cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
-  .then(d=>{if(!Array.isArray(d))throw new Error('Invalid cards.json');cards=d;loaded=true;renderShowcase();render();openLinkedCard()})
+  .then(d=>{if(!Array.isArray(d))throw new Error('Invalid cards.json');cards=d;loaded=true;fillFilters();drawTabs();renderShowcase();render();openLinkedCard()})
   .catch(()=>{loadError=true;$('#stat').textContent='Không đọc được file cards.json. Kiểm tra file có nằm cùng thư mục với index.html và viết đúng định dạng không.'});
 </script>
   <script data-goatcounter="https://vuhoanghauit.goatcounter.com/count"
